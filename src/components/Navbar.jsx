@@ -58,10 +58,10 @@ export default function Navbar() {
                 <><button onClick={() => signOut()} className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
                     <User className="w-5 h-5" />
                     <span className="font-medium">Logout</span>
-                  </button><button  className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
+                  </button><Link href="/dashboard" className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
                       <User className="w-5 h-5" />
                       <span className="font-medium">{session?.user?.email}</span>
-                    </button></>
+                    </Link></>
               ) : (
                 <Link href="/auth/login" className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
                   <User className="w-5 h-5" />
