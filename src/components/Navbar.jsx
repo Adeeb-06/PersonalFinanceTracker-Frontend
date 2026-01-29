@@ -1,17 +1,29 @@
 "use client";
-import React,{ useState } from 'react';
-import { Menu, X, Wallet, BarChart3, PiggyBank, Settings, User } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Menu,
+  X,
+  Wallet,
+  BarChart3,
+  PiggyBank,
+  Settings,
+  User,
+} from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const {data : session , status }= useSession();
 
   const navItems = [
-    { name: 'Dashboard', icon: BarChart3, href: '#dashboard' },
-    { name: 'Transactions', icon: Wallet, href: '#transactions' },
-    { name: 'Budget', icon: PiggyBank, href: '#budget' },
-    { name: 'Settings', icon: Settings, href: '#settings' },
+    { name: "Dashboard", icon: BarChart3, href: "#dashboard" },
+    { name: "Transactions", icon: Wallet, href: "#transactions" },
+    { name: "Budget", icon: PiggyBank, href: "#budget" },
+    { name: "Settings", icon: Settings, href: "#settings" },
   ];
 
+  console.log(session, "asfd");
   return (
     <nav className="bg-black border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,10 +50,26 @@ export default function Navbar() {
 
           {/* User Profile (Desktop) */}
           <div className="hidden md:flex items-center">
-            <button className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
-              <User className="w-5 h-5" />
-              <span className="font-medium">Profile</span>
-            </button>
+
+            {
+              status === "loading" ? (
+                <span className="text-gray-300 mr-4">Loading...</span>
+              ) : status === "authenticated" ? (
+                <><button onClick={() => signOut()} className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
+                    <User className="w-5 h-5" />
+                    <span className="font-medium">Logout</span>
+                  </button><button  className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
+                      <User className="w-5 h-5" />
+                      <span className="font-medium">{session?.user?.email}</span>
+                    </button></>
+              ) : (
+                <Link href="/auth/login" className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
+                  <User className="w-5 h-5" />
+                  <span className="font-medium">Login</span>
+                </Link>
+              )
+            }
+           
           </div>
 
           {/* Mobile menu button */}
