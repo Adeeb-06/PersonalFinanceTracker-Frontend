@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Menu, Home, Users, Settings, BarChart3, FileText, Bell, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Menu, Home, Users, Settings, BarChart3, FileText, Bell, Search, ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Sidebar() {
@@ -8,7 +8,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { icon: Home, label: 'Dashboard', active: true },
-    { icon: BarChart3, label: 'Analytics' },
+    { icon: DollarSign, label: 'Balance', href: '/dashboard/balance' },
     { icon: Users, label: 'Team' },
     { icon: FileText, label: 'Documents' },
     { icon: Bell, label: 'Notifications' },
@@ -65,7 +65,7 @@ export default function Sidebar() {
             return (
               <Link
                 key={index}
-                href="#"
+                href={item.href || '#'}
                 className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group ${
                   item.active
                     ? 'bg-white text-zinc-900'
