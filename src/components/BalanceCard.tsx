@@ -1,10 +1,12 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { Plus, TrendingUp, Calendar, Clock, Eye, EyeOff } from 'lucide-react';
+import BalanceAddModal from './BalanceAddModal';
 
 export default function BalanceCard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showBalance, setShowBalance] = useState(true);
+  const [isOpen , setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -32,8 +34,7 @@ export default function BalanceCard() {
   };
 
   const handleAddBalance = () => {
-    console.log('Add balance clicked');
-    // Handle add balance logic
+    setIsOpen(true);
   };
 
   return (
@@ -111,6 +112,11 @@ export default function BalanceCard() {
         </div>
       </div>
 
+    {
+      isOpen && (
+        <BalanceAddModal setIsOpen={setIsOpen} />
+      )
+    }
     
     </div>
   );
