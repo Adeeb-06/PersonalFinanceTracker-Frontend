@@ -33,7 +33,7 @@ interface Transaction {
   description: string;
 }
 
-export default function BalanceTable() {
+export default function IncomeTable() {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const { data: session, status } = useSession();
 

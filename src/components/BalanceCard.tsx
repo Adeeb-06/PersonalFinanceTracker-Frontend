@@ -68,7 +68,7 @@ export default function BalanceCard() {
             {showBalance ? (
               <>
                 <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary tracking-tight">
-{isUserLoading ? <span className="loading loading-dots loading-md"></span> : ( `${userData?.balance || "0"}`)}
+{isUserLoading ? <span className="loading loading-dots loading-md"></span> : ( `$${userData?.balance || "0"}`)}
                   
                 </span>
                 <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-500">

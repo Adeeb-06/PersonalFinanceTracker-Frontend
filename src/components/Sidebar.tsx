@@ -1,15 +1,18 @@
 "use client"
 import React, { useState } from 'react';
-import { Menu, Home, Users, Settings, BarChart3, FileText, Bell, Search, ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
+import { Menu, Home, Users, Settings, BarChart3, FileText, Bell, Search, ChevronLeft, ChevronRight, DollarSign, Wallet2 } from 'lucide-react';
 import Link from 'next/link';
+import Logo from './Logo';
+import { usePathname } from 'next/navigation';
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const pathname = usePathname()
 
   const menuItems = [
-    { icon: Home, label: 'Dashboard', active: true },
-    { icon: DollarSign, label: 'Balance', href: '/dashboard/balance' },
-    { icon: Users, label: 'Team' },
+    { icon: Home, label: 'Dashboard', href: '/dashboard' },
+    { icon: DollarSign, label: 'Income', href: '/dashboard/income' },
+    { icon: Wallet2, label: 'Expense', href: '/dashboard/expense' },
     { icon: FileText, label: 'Documents' },
     { icon: Bell, label: 'Notifications' },
     { icon: Settings, label: 'Settings' },
@@ -20,17 +23,12 @@ export default function Sidebar() {
       <div
         className={`${
           isCollapsed ? 'w-20' : 'w-64'
-        } bg-zinc-900 text-gray-100 transition-all duration-300 ease-in-out flex flex-col`}
+        } bg-zinc-900 text-gray-100  transition-all duration-300 ease-in-out flex flex-col`}
       >
         {/* Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-zinc-800">
+        <div className="h-16 flex items-center justify-between px-4 py-10 border-b border-zinc-800">
           {!isCollapsed && (
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                <Menu className="w-5 h-5 text-zinc-900" />
-              </div>
-              <span className="text-xl font-bold">Dashboard</span>
-            </div>
+           <Logo/>
           )}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -67,7 +65,7 @@ export default function Sidebar() {
                 key={index}
                 href={item.href || '#'}
                 className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group ${
-                  item.active
+                  pathname === item.href
                     ? 'bg-white text-zinc-900'
                     : 'text-gray-300 hover:bg-zinc-800 hover:text-white'
                 }`}

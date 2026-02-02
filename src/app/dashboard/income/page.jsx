@@ -1,16 +1,16 @@
 import React from 'react'
 import BalanceCard from '@/components/BalanceCard'
-import BalanceTable from '@/components/BalanceTable'
+import IncomeTable from '@/components/IncomeTable'
 
 
-const BalancePage = () => {
+const IncomePage = () => {
   return (
     <div className='bg-primary'>
         <BalanceCard  />
-        <BalanceTable />
+        <IncomeTable />
 
     </div>
   )
 }
 
-export default BalancePage
+export default IncomePage
