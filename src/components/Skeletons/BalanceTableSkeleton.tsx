@@ -20,10 +20,7 @@ export function BalanceTableSkeleton({ rows = 8 }: { rows?: number }) {
             <div className="h-4 w-28 bg-gray-700 rounded" />
           </td>
 
-          {/* Type */}
-          <td className="px-6 py-4">
-            <div className="h-6 w-20 bg-gray-700 rounded-full" />
-          </td>
+  
 
           {/* Category */}
           <td className="px-6 py-4">

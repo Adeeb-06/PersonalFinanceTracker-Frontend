@@ -2,11 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, TrendingUp, Calendar, Clock, Eye, EyeOff } from 'lucide-react';
 import BalanceAddModal from './BalanceAddModal';
+import { useSession } from 'next-auth/react';
 
 export default function BalanceCard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showBalance, setShowBalance] = useState(true);
   const [isOpen , setIsOpen] = useState<boolean>(false);
+
+  const {data: session} =  useSession();
+
+
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -38,7 +43,7 @@ export default function BalanceCard() {
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-gray-900 via-gray-900 to-black border border-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
+    <div className="w-full bg-secondary rounded-2xl p-6 md:p-8 shadow-2xl">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         {/* Left Side - Balance */}
         <div className="flex-1">
@@ -61,11 +66,11 @@ export default function BalanceCard() {
           <div className="flex items-baseline gap-2 mb-4">
             {showBalance ? (
               <>
-                <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">
-                  $12,450
+                <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary tracking-tight">
+                  ${session?.user?.balance || "0"}
                 </span>
                 <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-500">
-                  .50
+                  .00
                 </span>
               </>
             ) : (
@@ -84,7 +89,7 @@ export default function BalanceCard() {
           {/* Add Balance Button */}
           <button
             onClick={handleAddBalance}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-gray-100 text-gray-900 font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl w-full lg:w-auto"
+            className="flex items-center justify-center cursor-pointer gap-2 px-6 py-3 bg-primary hover:bg-primary/70 text-gray-900 font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl w-full lg:w-auto"
           >
             <Plus className="w-5 h-5" />
             <span>Add Balance</span>

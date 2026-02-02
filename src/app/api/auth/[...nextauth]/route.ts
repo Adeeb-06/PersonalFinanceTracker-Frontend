@@ -42,6 +42,8 @@ export const authOptions = {
         return {
           id: user._id.toString(), // REQUIRED
           email: user.email,
+          name: user.username,
+          balance: user.balance,
         };
       },
     }),
@@ -76,12 +78,23 @@ export const authOptions = {
   }
 }
 ,
-    async jwt({ token, user }: { token: JWT; user?: User }) {
+    async jwt({ token, user , account}: { token: JWT; user?: User , account?: Account }) {
+
+      console.log(user , "ATUHHH")
       if (user) {
         token.email = user.email;
         token.id = user.id;
         token.balance = user.balance;
       }
+
+      if(account?.provider === "google" && user) {
+
+        const res = await axios.get(`http://localhost:9000/api/users/${user.email}`);
+        token.email = user.email;
+        token.id = user.id;
+        token.balance = res.data.balance;
+      }
+    
       return token;
     },
 

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   X,
   Calendar,
@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import balanceContext from "@/app/context/BalanceContext";
 
 interface Balance {
   date: string;
@@ -32,6 +33,8 @@ export default function BalanceAddModal({
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [transactionType, setTransactionType] = useState("income");
+
+  const {refetchBalanceData } = useContext(balanceContext)
 
   const {
     register,
@@ -57,6 +60,7 @@ export default function BalanceAddModal({
         },
       );
      if(res.status === 201){
+      refetchBalanceData()
       toast.success("Transaction added successfully!");
       setIsOpen(false);
      }
