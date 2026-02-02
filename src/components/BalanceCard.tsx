@@ -1,17 +1,18 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import { Plus, TrendingUp, Calendar, Clock, Eye, EyeOff } from 'lucide-react';
-import BalanceAddModal from './BalanceAddModal';
-import { useSession } from 'next-auth/react';
+"use client";
+import React, { useState, useEffect, useContext } from "react";
+import { Plus, TrendingUp, Calendar, Clock, Eye, EyeOff } from "lucide-react";
+import BalanceAddModal from "./BalanceAddModal";
+import { useSession } from "next-auth/react";
+import UserContext from "@/app/context/UserContext";
 
 export default function BalanceCard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showBalance, setShowBalance] = useState(true);
-  const [isOpen , setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const {data: session} =  useSession();
+  const { userData , isUserLoading } = useContext(UserContext)!;
 
-
+  
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -22,19 +23,19 @@ export default function BalanceCard() {
   }, []);
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
@@ -62,12 +63,13 @@ export default function BalanceCard() {
               )}
             </button>
           </div>
-          
+
           <div className="flex items-baseline gap-2 mb-4">
             {showBalance ? (
               <>
                 <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary tracking-tight">
-                  ${session?.user?.balance || "0"}
+{isUserLoading ? <span className="loading loading-dots loading-md"></span> : ( `${userData?.balance || "0"}`)}
+                  
                 </span>
                 <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-500">
                   .00
@@ -81,7 +83,6 @@ export default function BalanceCard() {
           </div>
 
           {/* Balance Change Indicator */}
-       
         </div>
 
         {/* Right Side - Actions & Info */}
@@ -99,24 +100,21 @@ export default function BalanceCard() {
           <div className="flex flex-col gap-2 lg:items-end">
             <div className="flex items-center gap-2 text-gray-400">
               <Calendar className="w-4 h-4" />
-              <span className="text-sm font-medium">{formatDate(currentTime)}</span>
+              <span className="text-sm font-medium">
+                {formatDate(currentTime)}
+              </span>
             </div>
             <div className="flex items-center gap-2 text-gray-400">
               <Clock className="w-4 h-4" />
-              <span className="text-sm font-medium font-mono">{formatTime(currentTime)}</span>
+              <span className="text-sm font-medium font-mono">
+                {formatTime(currentTime)}
+              </span>
             </div>
           </div>
-
-       
         </div>
       </div>
 
-    {
-      isOpen && (
-        <BalanceAddModal setIsOpen={setIsOpen} />
-      )
-    }
-    
+      {isOpen && <BalanceAddModal setIsOpen={setIsOpen} />}
     </div>
   );
 }

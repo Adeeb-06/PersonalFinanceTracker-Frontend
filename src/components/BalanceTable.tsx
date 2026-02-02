@@ -186,11 +186,6 @@ console.log(balanceData)
                      <button className="btn btn-sm btn-success">
                       <Edit2 size={15} />
                      </button>
-
-                      {/* Dropdown Menu */}
-                    
-                       
-                      
                     </div>
                   </td>
                 </tr>

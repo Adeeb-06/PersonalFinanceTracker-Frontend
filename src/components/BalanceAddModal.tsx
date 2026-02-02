@@ -17,6 +17,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
+import UserContext from "@/app/context/UserContext";
 
 interface Balance {
   date: string;
@@ -35,6 +36,7 @@ export default function BalanceAddModal({
   const [transactionType, setTransactionType] = useState("income");
 
   const {refetchBalanceData } = useContext(balanceContext)
+  const {refetchUser} = useContext(UserContext)!
 
   const {
     register,
@@ -61,6 +63,7 @@ export default function BalanceAddModal({
       );
      if(res.status === 201){
       refetchBalanceData()
+      refetchUser()
       toast.success("Transaction added successfully!");
       setIsOpen(false);
      }

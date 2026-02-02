@@ -1,15 +1,26 @@
+"use client"
+import React,{ createContext, Dispatch, SetStateAction } from "react";
+import { QueryObserverResult } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { createContext } from "react";
 
 
-const UserContext = createContext(null);
-
-export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { data: session } = useSession();
-  const userEmail = session?.user?.email || null;
-    return (    
-    <UserContext.Provider value={userEmail}>
-      {children}
-    </UserContext.Provider>
-  );
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  balance: number;
 }
+
+
+interface UserCont{
+    userData: User;
+    refetchUser: () => Promise<QueryObserverResult<User[], Error>>;
+    isUserLoading: boolean,
+    userError: Error | null
+}
+
+const UserContext = createContext<UserCont | null>(null);
+
+
+export default UserContext

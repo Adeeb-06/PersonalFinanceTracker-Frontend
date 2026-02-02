@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import BalanceProvider from "@/providers/BalanceProvider";
+import UserProvider from "@/providers/UserProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,12 +22,12 @@ export default function RootLayout({
       <body className="antialiased">
         <NextAuthProvider>
           <ReactQueryProvider>
-            <BalanceProvider>
-
-
-            <ToastContainer />
-            {children}
-            </BalanceProvider>
+            <UserProvider>
+              <BalanceProvider>
+                <ToastContainer />
+                {children}
+              </BalanceProvider>
+            </UserProvider>
           </ReactQueryProvider>
         </NextAuthProvider>
       </body>
