@@ -11,6 +11,7 @@ interface User {
   name: string;
   email: string;
   password: string;
+  balance: number;
 }
 
 export const authOptions = {
@@ -79,6 +80,7 @@ export const authOptions = {
       if (user) {
         token.email = user.email;
         token.id = user.id;
+        token.balance = user.balance;
       }
       return token;
     },
@@ -87,6 +89,7 @@ export const authOptions = {
       if (token) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
+        session.user.balance = token.balance as number;
       }
       return session;
     },

@@ -76,13 +76,7 @@ export default function BalanceCard() {
           </div>
 
           {/* Balance Change Indicator */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500 bg-opacity-10 rounded-lg">
-              <TrendingUp className="w-4 h-4 text-green-400" />
-              <span className="text-sm font-semibold text-green-400">+12.5%</span>
-            </div>
-            <span className="text-sm text-gray-400">vs last month</span>
-          </div>
+       
         </div>
 
         {/* Right Side - Actions & Info */}
