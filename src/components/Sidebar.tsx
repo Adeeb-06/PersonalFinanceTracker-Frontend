@@ -1,6 +1,6 @@
 "use client"
 import React, { useContext, useState } from 'react';
-import { Menu, Home, Users, Settings, BarChart3, FileText, Bell, Search, ChevronLeft, ChevronRight, DollarSign, Wallet2, User } from 'lucide-react';
+import { Menu, Home, Users, Settings, BarChart3, FileText, Bell, Search, ChevronLeft, ChevronRight, DollarSign, Wallet2, User, Receipt } from 'lucide-react';
 import Link from 'next/link';
 import Logo from './Logo';
 import { usePathname } from 'next/navigation';
@@ -16,7 +16,7 @@ export default function Sidebar() {
     { icon: Home, label: 'Dashboard', href: '/dashboard' },
     { icon: DollarSign, label: 'Income', href: '/dashboard/income' },
     { icon: Wallet2, label: 'Expense', href: '/dashboard/expense' },
-    { icon: FileText, label: 'Documents' },
+    { icon: Receipt, label: 'Budget', href: '/dashboard/budget' },
     { icon: Bell, label: 'Notifications' },
     { icon: Settings, label: 'Settings' },
   ];

@@ -7,6 +7,7 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import BalanceProvider from "@/providers/BalanceProvider";
 import UserProvider from "@/providers/UserProvider";
 import ExpenseProvider from "@/providers/ExpenseProvider";
+import BudgetProvider from "@/providers/BudgetProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,11 +26,12 @@ export default function RootLayout({
           <ReactQueryProvider>
             <UserProvider>
               <ExpenseProvider>
-
-              <BalanceProvider>
-                <ToastContainer />
-                {children}
-              </BalanceProvider>
+                <BudgetProvider>
+                  <BalanceProvider>
+                    <ToastContainer />
+                    {children}
+                  </BalanceProvider>
+                </BudgetProvider>
               </ExpenseProvider>
             </UserProvider>
           </ReactQueryProvider>
