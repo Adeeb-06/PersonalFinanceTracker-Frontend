@@ -6,6 +6,7 @@ import NextAuthProvider from "@/providers/NextAuthProvider";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import BalanceProvider from "@/providers/BalanceProvider";
 import UserProvider from "@/providers/UserProvider";
+import ExpenseProvider from "@/providers/ExpenseProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,10 +24,13 @@ export default function RootLayout({
         <NextAuthProvider>
           <ReactQueryProvider>
             <UserProvider>
+              <ExpenseProvider>
+
               <BalanceProvider>
                 <ToastContainer />
                 {children}
               </BalanceProvider>
+              </ExpenseProvider>
             </UserProvider>
           </ReactQueryProvider>
         </NextAuthProvider>

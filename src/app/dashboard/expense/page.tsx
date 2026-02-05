@@ -1,8 +1,13 @@
+import ExpenseCard from '@/components/ExpenseCard'
+import ExpenseTable from '@/components/ExpenseTable'
 import React from 'react'
 
 const ExpensePage = () => {
   return (
-    <div>ExpensePage</div>
+    <div>
+      <ExpenseCard/>
+      <ExpenseTable/>
+    </div>
   )
 }
 

@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 
 interface User {
   id: string;
-  name: string;
+  username: string;
   email: string;
   password: string;
   balance: number;

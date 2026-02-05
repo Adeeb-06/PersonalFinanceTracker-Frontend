@@ -1,13 +1,16 @@
 "use client"
-import React, { useState } from 'react';
-import { Menu, Home, Users, Settings, BarChart3, FileText, Bell, Search, ChevronLeft, ChevronRight, DollarSign, Wallet2 } from 'lucide-react';
+import React, { useContext, useState } from 'react';
+import { Menu, Home, Users, Settings, BarChart3, FileText, Bell, Search, ChevronLeft, ChevronRight, DollarSign, Wallet2, User } from 'lucide-react';
 import Link from 'next/link';
 import Logo from './Logo';
 import { usePathname } from 'next/navigation';
+import UserContext from '@/app/context/UserContext';
+import { signOut } from 'next-auth/react';
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname()
+  const {userData} = useContext(UserContext)!
 
   const menuItems = [
     { icon: Home, label: 'Dashboard', href: '/dashboard' },
@@ -83,15 +86,22 @@ export default function Sidebar() {
         <div className="border-t border-zinc-800 p-4">
           <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'}`}>
             <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold">
-              JD
+              {userData?.username?.[0]}
             </div>
             {!isCollapsed && (
               <div className="flex-1">
-                <p className="text-sm font-medium text-white">John Doe</p>
-                <p className="text-xs text-gray-400">john@example.com</p>
+                <p className="text-sm font-medium text-white">{userData?.username}</p>
+                <p className="text-xs text-gray-400">{userData?.email}</p>
               </div>
             )}
           </div>
+          <div className="flex items-center mt-3 space-x-3">
+           <button onClick={() => signOut()} className='btn btn-md btn-primary text-secondary'>
+             <User className="w-5 h-5" />
+             Logout
+           </button>
+            </div>
+
         </div>
       </div>
 
