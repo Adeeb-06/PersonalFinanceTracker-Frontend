@@ -1,26 +1,45 @@
 "use client"
-import React,{ useState, useEffect } from "react";
+import React,{ useState, useEffect, useContext } from "react";
 import { Minus, TrendingDown, Calendar, Clock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import ExpenseAddModal from "./ExpenseAddModal";
+import budgetContext from "@/app/context/BudgetContext";
 
 export default function ExpenseCard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showExpense, setShowExpense] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Mock data - replace with actual context/props
-  const totalExpense = 3280.50;
-  const monthlyBudget = 5000;
-  const percentageUsed = (totalExpense / monthlyBudget) * 100;
-  const isOverBudget = totalExpense > monthlyBudget;
+  const { budgetByMonthData,isBudgetByMonthLoading,refetchBudgetByMonthData , setMonth} = useContext(budgetContext)!;
+
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+
 
   useEffect(() => {
+    refetchBudgetByMonthData();
+    setMonth(`${currentMonth}/${currentYear}`);
+  }, [currentMonth, currentYear]);
+    useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
+
+  // console.log(budgetByMonthData)
+
+  if (!budgetByMonthData) {
+  return null; // or loading UI
+}
+
+  // Mock data - replace with actual context/props
+  const totalExpense = 3280.50;
+  const monthlyBudget  = budgetByMonthData.amount;
+  const percentageUsed = (budgetByMonthData.spent / monthlyBudget) * 100;
+  const isOverBudget = budgetByMonthData.spent > monthlyBudget;
+
+
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -109,7 +128,7 @@ export default function ExpenseCard() {
             </div>
             <div className="flex items-center justify-between mt-1">
               <span className="text-xs text-gray-500">
-                ${(monthlyBudget - totalExpense).toFixed(2)} remaining
+                ${(budgetByMonthData.remaining).toFixed(2)} remaining
               </span>
               <span className="text-xs text-gray-500">
                 of ${monthlyBudget.toFixed(2)}

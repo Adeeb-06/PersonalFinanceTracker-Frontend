@@ -12,9 +12,34 @@ interface Props {
   children: React.ReactNode;
 }
 
+interface BudgetByMonth {
+  amount: number;
+  spent: number;
+  remaining: number;
+}
+
 const BudgetProvider = ({children}:Props) => {
     const [page, setPage] = React.useState<number>(1);
     const [limit, setLimit] = React.useState<number>(6);
+    const [month , setMonth] = React.useState<string>("")
+        const {data: session} = useSession()
+
+
+
+    const getBudgetByMonth = async (userEmail: string, month: string) => {
+        try {
+            const res = await axios.get(
+                `http://localhost:9000/api/budget/get-budget-by-month/${userEmail}?month=${month}`,
+                {
+                    withCredentials: true,
+                },
+            );
+
+            return res.data;
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const fetchBudgetData = async () => {
         try {
@@ -36,7 +61,7 @@ const BudgetProvider = ({children}:Props) => {
             console.error(error);
         }
     };
-    const {data: session} = useSession()
+
 
 
     const {
@@ -50,12 +75,31 @@ const BudgetProvider = ({children}:Props) => {
         enabled: !!session?.user?.email,
     });
 
+
+    const {
+        data: budgetByMonthData,
+        isLoading: isBudgetByMonthLoading,
+        error: budgetByMonthDataError,
+        refetch: refetchBudgetByMonthData,
+    } = useQuery<BudgetByMonth>({
+        queryKey: ["budgetByMonthData", session?.user?.email, month],
+        queryFn: () => getBudgetByMonth(session?.user?.email, month),
+        enabled: !!session?.user?.email && !!month,
+    });
+    
+
     const data = {
         budgetData,
         refetchBudgetData,
         isBudgetLoading,
+        budgetByMonthData,
+        refetchBudgetByMonthData,
+        isBudgetByMonthLoading,
+        month,
+        setMonth,
     }
-  return (
+
+ return (
   <budgetContext.Provider value={data}>
       {children}
   </budgetContext.Provider>
