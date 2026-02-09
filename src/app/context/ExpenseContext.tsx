@@ -20,6 +20,12 @@ interface ExpenseResponse {
   };
 }
 
+interface TotalExpenseByMonth {
+  total: number;
+  monthName: string;
+  monthNumber: number;
+}
+
 interface ExpenseContextType {
    expenseData: ExpenseResponse;
    refetchExpenseData: () => Promise<QueryObserverResult<ExpenseItem[], Error>>;
@@ -27,6 +33,11 @@ interface ExpenseContextType {
    setPage: React.Dispatch<React.SetStateAction<number>>;
    setLimit: React.Dispatch<React.SetStateAction<number>>;
    page: number;
+   setMonthExpense: React.Dispatch<React.SetStateAction<number | undefined>>;
+   setYear: React.Dispatch<React.SetStateAction<number| undefined>>;
+   totalExpenseByMonthData: TotalExpenseByMonth;
+   refetchTotalExpenseByMonthData: () => Promise<QueryObserverResult<TotalExpenseByMonth[], Error>>;
+   isTotalExpenseByMonthLoading: boolean;
 }
 
 

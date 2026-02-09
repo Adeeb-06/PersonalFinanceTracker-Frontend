@@ -19,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BalanceTableSkeleton } from "./Skeletons/BalanceTableSkeleton";
 import balanceContext from "@/app/context/BalanceContext";
 import expenseContext from "@/app/context/ExpenseContext";
+import { NoTransactions } from "./Skeletons/NoTransaction";
 
 interface Pagination {
   currentPage: string | number;
@@ -36,27 +37,22 @@ interface Transaction {
 }
 
 export default function ExpenseTable() {
-
   const { data: session, status } = useSession();
 
+  const { expenseData, refetchExpenseData, isExpenseLoading, page, setPage } =
+    useContext(expenseContext)!;
 
-const { expenseData  ,refetchExpenseData, isExpenseLoading , page  , setPage } = useContext(expenseContext)!
-
-console.log(expenseData)
-
+  console.log(expenseData);
 
   const pagination = expenseData?.pagination || null;
 
   console.log(expenseData);
 
-  const showSkeleton = status === "loading" || isExpenseLoading;
+  const showSkeleton = isExpenseLoading;
 
   const handleDateFilter = () => {
     refetchExpenseData();
   };
-
-
-
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -67,12 +63,16 @@ console.log(expenseData)
     });
   };
 
+  const transactions = expenseData?.data ?? [];
+
   return (
     <div className="w-full mt-5 bg-secondary  border border-gray-800 rounded-2xl overflow-hidden">
       {/* Table Header */}
       <div className="px-6 flex justify-between gap-2 py-4 border-b border-gray-800">
         <div>
-          <h2 className="text-xl font-bold text-white">Recent Income Transactions</h2>
+          <h2 className="text-xl font-bold text-white">
+            Recent Income Transactions
+          </h2>
           <p className="text-sm text-gray-400 mt-1">
             View and manage your transactions
           </p>
@@ -121,10 +121,17 @@ console.log(expenseData)
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
-            {showSkeleton ? (
-              <BalanceTableSkeleton rows={10} />
-            ) : (
-              expenseData?.data?.map((transaction: Transaction) => (
+            {showSkeleton && <BalanceTableSkeleton rows={10} />}
+            {!showSkeleton && transactions.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-8 text-center text-gray-400">
+                  <NoTransactions />
+                </td>
+              </tr>
+            )}
+            {!showSkeleton &&
+              transactions.length > 0 &&
+              transactions.map((transaction: Transaction) => (
                 <tr
                   key={transaction._id}
                   className="hover:bg-primary/5 hover:bg-opacity-50 transition-colors duration-150"
@@ -170,17 +177,16 @@ console.log(expenseData)
                   {/* Actions */}
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="relative flex justify-center gap-5">
-                     <button className="btn btn-sm btn-error">
-                      <XIcon size={15} />
-                     </button>
-                     <button className="btn btn-sm btn-success">
-                      <Edit2 size={15} />
-                     </button>
+                      <button className="btn btn-sm btn-error">
+                        <XIcon size={15} />
+                      </button>
+                      <button className="btn btn-sm btn-success">
+                        <Edit2 size={15} />
+                      </button>
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
+              ))}
           </tbody>
         </table>
       </div>

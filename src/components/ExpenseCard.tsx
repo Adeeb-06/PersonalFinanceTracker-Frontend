@@ -1,25 +1,57 @@
-"use client"
-import React,{ useState, useEffect, useContext } from "react";
-import { Minus, TrendingDown, Calendar, Clock, Eye, EyeOff, AlertCircle } from "lucide-react";
+"use client";
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Minus,
+  TrendingDown,
+  Calendar,
+  Clock,
+  Eye,
+  EyeOff,
+  AlertCircle,
+} from "lucide-react";
 import ExpenseAddModal from "./ExpenseAddModal";
 import budgetContext from "@/app/context/BudgetContext";
+import expenseContext from "@/app/context/ExpenseContext";
 
 export default function ExpenseCard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showExpense, setShowExpense] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
 
-  const { budgetByMonthData,isBudgetByMonthLoading,refetchBudgetByMonthData , setMonth} = useContext(budgetContext)!;
+  const {
+    budgetByMonthData,
+    isBudgetByMonthLoading,
+    refetchBudgetByMonthData,
+    setMonth,
+  } = useContext(budgetContext)!;
+  const {
+    setMonthExpense,
+    setYear,
+    totalExpenseByMonthData,
+    refetchExpenseData,
+    isTotalExpenseByMonthLoading,
+  } = useContext(expenseContext)!;
 
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
+  useEffect(() => {
+    const now = new Date();
+    setMonthExpense(now.getMonth() + 1);
+    setYear(now.getFullYear());
+
+    refetchExpenseData();
+  }, []);
+
+  // console.log(totalExpenseByMonthData)
+
+  // console.log(currentMonth , currentYear)
 
   useEffect(() => {
-    refetchBudgetByMonthData();
     setMonth(`${currentMonth}/${currentYear}`);
+    refetchBudgetByMonthData();
   }, [currentMonth, currentYear]);
-    useEffect(() => {
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -30,16 +62,14 @@ export default function ExpenseCard() {
   // console.log(budgetByMonthData)
 
   if (!budgetByMonthData) {
-  return null; // or loading UI
-}
+    return null; // or loading UI
+  }
 
   // Mock data - replace with actual context/props
-  const totalExpense = 3280.50;
-  const monthlyBudget  = budgetByMonthData.amount;
+  const totalExpense = totalExpenseByMonthData?.total;
+  const monthlyBudget = budgetByMonthData.amount;
   const percentageUsed = (budgetByMonthData.spent / monthlyBudget) * 100;
   const isOverBudget = budgetByMonthData.spent > monthlyBudget;
-
-
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -48,7 +78,7 @@ export default function ExpenseCard() {
     });
   };
 
-  const formatTime = (date : Date) => {
+  const formatTime = (date: Date) => {
     return date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
@@ -84,12 +114,18 @@ export default function ExpenseCard() {
           <div className="flex items-baseline gap-2 mb-2">
             {showExpense ? (
               <>
-                <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-red-400 tracking-tight">
-                  ${totalExpense.toFixed(0)}
-                </span>
-                <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-red-500 opacity-70">
-                  .{(totalExpense % 1).toFixed(2).split('.')[1]}
-                </span>
+                {isTotalExpenseByMonthLoading ? (
+                  <span className="loading loading-dots loading-md"></span>
+                ) : (
+                  <>
+                    <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-red-400 tracking-tight">
+                      ${totalExpense?.toFixed(0)}
+                    </span>
+                    <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-red-500 opacity-70">
+                      .{(totalExpense % 1)?.toFixed(2).split(".")[1]}
+                    </span>
+                  </>
+                )}
               </>
             ) : (
               <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-600 tracking-tight">
@@ -109,26 +145,30 @@ export default function ExpenseCard() {
           {/* Budget Progress Bar */}
           <div className="mb-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-gray-500 uppercase tracking-wide">Budget Usage</span>
-              <span className={`text-xs font-bold ${isOverBudget ? 'text-red-400' : 'text-gray-400'}`}>
+              <span className="text-xs text-gray-500 uppercase tracking-wide">
+                Budget Usage
+              </span>
+              <span
+                className={`text-xs font-bold ${isOverBudget ? "text-red-400" : "text-gray-400"}`}
+              >
                 {percentageUsed.toFixed(1)}%
               </span>
             </div>
             <div className="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
-                  isOverBudget 
-                    ? 'bg-gradient-to-r from-red-500 to-red-600' 
-                    : percentageUsed > 75 
-                    ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
-                    : 'bg-gradient-to-r from-green-500 to-emerald-500'
+                  isOverBudget
+                    ? "bg-gradient-to-r from-red-500 to-red-600"
+                    : percentageUsed > 75
+                      ? "bg-gradient-to-r from-yellow-500 to-orange-500"
+                      : "bg-gradient-to-r from-green-500 to-emerald-500"
                 }`}
                 style={{ width: `${Math.min(percentageUsed, 100)}%` }}
               ></div>
             </div>
             <div className="flex items-center justify-between mt-1">
               <span className="text-xs text-gray-500">
-                ${(budgetByMonthData.remaining).toFixed(2)} remaining
+                ${budgetByMonthData.remaining.toFixed(2)} remaining
               </span>
               <span className="text-xs text-gray-500">
                 of ${monthlyBudget.toFixed(2)}
@@ -140,7 +180,7 @@ export default function ExpenseCard() {
           {isOverBudget && (
             <div className="flex items-center gap-2 px-3 py-2 bg-red-500 bg-opacity-10 rounded-lg border border-red-500 border-opacity-30">
               <AlertCircle className="w-4 h-4 text-red-400" />
-              <span className="text-xs font-semibold text-red-400">
+              <span className="text-xs font-semibold text-primary">
                 Over budget by ${(totalExpense - monthlyBudget).toFixed(2)}
               </span>
             </div>
@@ -169,11 +209,15 @@ export default function ExpenseCard() {
           {/* Expense Stats */}
           <div className="pt-2 border-t border-gray-800 w-full lg:w-auto space-y-2">
             <div className="flex items-center justify-between lg:flex-col lg:items-end gap-2">
-              <span className="text-xs text-gray-500 uppercase tracking-wide">This Week</span>
+              <span className="text-xs text-gray-500 uppercase tracking-wide">
+                This Week
+              </span>
               <span className="text-sm font-bold text-white">$842.30</span>
             </div>
             <div className="flex items-center justify-between lg:flex-col lg:items-end gap-2">
-              <span className="text-xs text-gray-500 uppercase tracking-wide">Transactions</span>
+              <span className="text-xs text-gray-500 uppercase tracking-wide">
+                Transactions
+              </span>
               <span className="text-sm font-bold text-white">47</span>
             </div>
           </div>
@@ -181,8 +225,6 @@ export default function ExpenseCard() {
       </div>
 
       {isOpen && <ExpenseAddModal setIsOpen={setIsOpen} />}
-
-    
     </div>
   );
 }

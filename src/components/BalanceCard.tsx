@@ -10,9 +10,7 @@ export default function BalanceCard() {
   const [showBalance, setShowBalance] = useState(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const { userData , isUserLoading } = useContext(UserContext)!;
-
-  
+  const { userData, isUserLoading } = useContext(UserContext)!;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -68,8 +66,11 @@ export default function BalanceCard() {
             {showBalance ? (
               <>
                 <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary tracking-tight">
-{isUserLoading ? <span className="loading loading-dots loading-md"></span> : ( `$${userData?.balance || "0"}`)}
-                  
+                  {isUserLoading ? (
+                    <span className="loading loading-dots loading-md"></span>
+                  ) : (
+                    `$${userData?.balance || "0"}`
+                  )}
                 </span>
                 <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-500">
                   .00

@@ -1,10 +1,8 @@
-import React from 'react';
-
 export function BalanceTableSkeleton({ rows = 8 }: { rows?: number }) {
   return (
-    <tbody className="divide-y divide-gray-800 animate-pulse">
+    <>
       {Array.from({ length: rows }).map((_, i) => (
-        <tr key={i}>
+        <tr key={i} className="animate-pulse">
           {/* Date */}
           <td className="px-6 py-4">
             <div className="h-4 w-24 bg-gray-700 rounded" />
@@ -20,8 +18,6 @@ export function BalanceTableSkeleton({ rows = 8 }: { rows?: number }) {
             <div className="h-4 w-28 bg-gray-700 rounded" />
           </td>
 
-  
-
           {/* Category */}
           <td className="px-6 py-4">
             <div className="space-y-2">
@@ -36,6 +32,6 @@ export function BalanceTableSkeleton({ rows = 8 }: { rows?: number }) {
           </td>
         </tr>
       ))}
-    </tbody>
+    </>
   );
 }

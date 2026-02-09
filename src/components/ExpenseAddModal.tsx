@@ -18,6 +18,8 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
 import UserContext from "@/app/context/UserContext";
+import expenseContext from "@/app/context/ExpenseContext";
+import budgetContext from "@/app/context/BudgetContext";
 
 interface Balance {
   date: string;
@@ -35,8 +37,11 @@ export default function ExpenseAddModal({
 }) {
 
 
-  const {refetchBalanceData } = useContext(balanceContext)
+  const {refetchBalanceData } = useContext(balanceContext)!
   const {refetchUser} = useContext(UserContext)!
+  const {refetchTotalExpenseByMonthData} = useContext(expenseContext)!
+  const {refetchBudgetByMonthData} = useContext(budgetContext)!
+
 
   const {
     register,
@@ -64,6 +69,8 @@ export default function ExpenseAddModal({
      if(res.status === 201){
       refetchBalanceData()
       refetchUser()
+      refetchTotalExpenseByMonthData()
+      refetchBudgetByMonthData()
       toast.success("Transaction added successfully!");
       setIsOpen(false);
      }
