@@ -61,15 +61,14 @@ export default function ExpenseCard() {
 
   // console.log(budgetByMonthData)
 
-  if (!budgetByMonthData) {
-    return null; // or loading UI
-  }
-
   // Mock data - replace with actual context/props
-  const totalExpense = totalExpenseByMonthData?.total;
-  const monthlyBudget = budgetByMonthData.amount;
-  const percentageUsed = (budgetByMonthData.spent / monthlyBudget) * 100;
-  const isOverBudget = budgetByMonthData.spent > monthlyBudget;
+  const totalExpense = totalExpenseByMonthData?.total || 0;
+  const monthlyBudget = budgetByMonthData?.amount || 0;
+  const spent = budgetByMonthData?.spent || 0;
+  const remaining = budgetByMonthData?.remaining || 0;
+
+  const percentageUsed = monthlyBudget > 0 ? (spent / monthlyBudget) * 100 : 0;
+  const isOverBudget = monthlyBudget > 0 && spent > monthlyBudget;
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -168,7 +167,7 @@ export default function ExpenseCard() {
             </div>
             <div className="flex items-center justify-between mt-1">
               <span className="text-xs text-gray-500">
-                ${budgetByMonthData.remaining.toFixed(2)} remaining
+                ${remaining.toFixed(2)} remaining
               </span>
               <span className="text-xs text-gray-500">
                 of ${monthlyBudget.toFixed(2)}

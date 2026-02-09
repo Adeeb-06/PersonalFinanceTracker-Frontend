@@ -39,7 +39,7 @@ export default function ExpenseAddModal({
 
   const {refetchBalanceData } = useContext(balanceContext)!
   const {refetchUser} = useContext(UserContext)!
-  const {refetchTotalExpenseByMonthData} = useContext(expenseContext)!
+  const {refetchTotalExpenseByMonthData , refetchExpenseData} = useContext(expenseContext)!
   const {refetchBudgetByMonthData} = useContext(budgetContext)!
 
 
@@ -71,6 +71,7 @@ export default function ExpenseAddModal({
       refetchUser()
       refetchTotalExpenseByMonthData()
       refetchBudgetByMonthData()
+      refetchExpenseData()
       toast.success("Transaction added successfully!");
       setIsOpen(false);
      }

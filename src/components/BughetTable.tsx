@@ -5,6 +5,7 @@ import BudgetAddModal from "./BudgetAddModal";
 import budgetContext from "@/app/context/BudgetContext";
 import { useSession } from "next-auth/react";
 import BudgetSkeleton from "./Skeletons/BudgetTableSkeleton";
+import { NoBudget } from "./Skeletons/NoBudget";
 
 export default function BudgetTable() {
   const { data: session, status } = useSession();
@@ -14,76 +15,14 @@ export default function BudgetTable() {
 
   console.log(budgetData);
 
-  const budgets = [
-    {
-      id: 1,
-      month: "January 2026",
-      amount: 5000.0,
-      spent: 3280.5,
-      remaining: 1719.5,
-    },
-    {
-      id: 2,
-      month: "February 2026",
-      amount: 5500.0,
-      spent: 0,
-      remaining: 5500.0,
-    },
-    {
-      id: 3,
-      month: "March 2026",
-      amount: 5200.0,
-      spent: 0,
-      remaining: 5200.0,
-    },
-    {
-      id: 4,
-      month: "April 2026",
-      amount: 5000.0,
-      spent: 0,
-      remaining: 5000.0,
-    },
-    {
-      id: 5,
-      month: "May 2026",
-      amount: 5000.0,
-      spent: 0,
-      remaining: 5000.0,
-    },
-    {
-      id: 6,
-      month: "June 2026",
-      amount: 5300.0,
-      spent: 0,
-      remaining: 5300.0,
-    },
-  ];
-
-  const getMonthName = (month: string) => {
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    const name = months[new Date(month).getMonth()];
-    const year = new Date(month).getFullYear();
-    return `${name} ${year}`;
-  };
-
   const getProgressPercentage = (spent: number, total: number) => {
     return (spent / total) * 100;
   };
 
-  const showSkeleton = status === "loading" || isBudgetLoading;
+  const showSkeleton =
+    isBudgetLoading ||
+    status === "loading" ||
+    (status === "authenticated" && !budgetData);
 
   const handleAddBudget = () => {
     setIsOpen(true);
@@ -113,11 +52,15 @@ export default function BudgetTable() {
 
       {/* Table Content */}
       <div className="p-6 space-y-4 bg-primary/20  ">
-        {showSkeleton
-          ? Array.from({ length: 5 }).map((_, idx) => (
-              <BudgetSkeleton key={idx} />
-            ))
-          : budgetData?.data?.map((budget, index) => (
+        {showSkeleton && (
+          Array.from({ length: 5 }).map((_, idx) => (
+            <BudgetSkeleton key={idx} />
+          ))
+       )}
+       {!showSkeleton && budgetData?.data.length === 0 && <NoBudget />}
+       {
+        !showSkeleton && budgetData?.data.length > 0 && (
+          budgetData?.data?.map((budget, index) => (
               <div
                 key={budget._id}
                 className="bg-primary rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 border border-zinc-200"
@@ -195,7 +138,9 @@ export default function BudgetTable() {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+        )
+       }
       </div>
 
       {/* Table Footer */}

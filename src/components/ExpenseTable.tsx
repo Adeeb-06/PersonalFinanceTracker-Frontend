@@ -48,7 +48,10 @@ export default function ExpenseTable() {
 
   console.log(expenseData);
 
-  const showSkeleton = isExpenseLoading;
+  const showSkeleton =
+    isExpenseLoading ||
+    status === "loading" ||
+    (status === "authenticated" && !expenseData);
 
   const handleDateFilter = () => {
     refetchExpenseData();

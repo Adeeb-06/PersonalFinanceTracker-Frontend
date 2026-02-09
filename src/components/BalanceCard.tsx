@@ -38,7 +38,8 @@ export default function BalanceCard() {
   };
 
   const handleAddBalance = () => {
-    setIsOpen(true);
+    setIsOpen(true); 
+    
   };
 
   return (

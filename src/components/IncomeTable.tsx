@@ -16,6 +16,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import { BalanceTableSkeleton } from "./Skeletons/BalanceTableSkeleton";
+import { NoTransactions } from "./Skeletons/NoTransaction";
 import balanceContext from "@/app/context/BalanceContext";
 
 interface Pagination {
@@ -47,7 +48,13 @@ console.log(balanceData)
 
   console.log(balanceData);
 
-  const showSkeleton = status === "loading" || isBalanceLoading;
+
+  const transactions = balanceData?.data ?? [];
+
+  const showSkeleton =
+    isBalanceLoading ||
+    status === "loading" ||
+    (status === "authenticated" && !balanceData);
 
   const handleDateFilter = () => {
     refetchBalanceData();
@@ -131,10 +138,17 @@ console.log(balanceData)
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
-            {showSkeleton ? (
-              <BalanceTableSkeleton rows={10} />
-            ) : (
-              balanceData?.data?.map((transaction: Transaction) => (
+            {showSkeleton && <BalanceTableSkeleton rows={10} />}
+            {!showSkeleton && transactions.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-8 text-center text-gray-400">
+                  <NoTransactions />
+                </td>
+              </tr>
+            )}
+            {!showSkeleton &&
+              transactions.length > 0 &&
+              transactions.map((transaction: Transaction) => (
                 <tr
                   key={transaction._id}
                   className="hover:bg-primary/5 hover:bg-opacity-50 transition-colors duration-150"
@@ -180,17 +194,16 @@ console.log(balanceData)
                   {/* Actions */}
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="relative flex justify-center gap-5">
-                     <button className="btn btn-sm btn-error">
-                      <XIcon size={15} />
-                     </button>
-                     <button className="btn btn-sm btn-success">
-                      <Edit2 size={15} />
-                     </button>
+                      <button className="btn btn-sm btn-error">
+                        <XIcon size={15} />
+                      </button>
+                      <button className="btn btn-sm btn-success">
+                        <Edit2 size={15} />
+                      </button>
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
+              ))}
           </tbody>
         </table>
       </div>
