@@ -18,7 +18,7 @@ export default function Sidebar() {
     { icon: Wallet2, label: 'Expense', href: '/dashboard/expense' },
     { icon: Receipt, label: 'Budget', href: '/dashboard/budget' },
     { icon: Bell, label: 'Notifications' },
-    { icon: Settings, label: 'Settings' },
+    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
   ];
 
   return (

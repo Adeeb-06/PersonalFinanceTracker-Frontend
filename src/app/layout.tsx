@@ -8,6 +8,7 @@ import BalanceProvider from "@/providers/BalanceProvider";
 import UserProvider from "@/providers/UserProvider";
 import ExpenseProvider from "@/providers/ExpenseProvider";
 import BudgetProvider from "@/providers/BudgetProvider";
+import CategoryProvider from "@/providers/CategoryProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,11 +29,14 @@ export default function RootLayout({
               <ExpenseProvider>
                 <BudgetProvider>
                   <BalanceProvider>
+                    <CategoryProvider>
                     <ToastContainer />
                     {children}
+                    </CategoryProvider>
                   </BalanceProvider>
                 </BudgetProvider>
               </ExpenseProvider>
+           
             </UserProvider>
           </ReactQueryProvider>
         </NextAuthProvider>

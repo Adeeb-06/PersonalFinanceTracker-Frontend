@@ -18,6 +18,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
 import UserContext from "@/app/context/UserContext";
+import CategoriesContext from "@/app/context/CategoriesContext";
 
 interface Balance {
   date: string;
@@ -35,7 +36,8 @@ export default function BalanceAddModal({
 }) {
   const [transactionType, setTransactionType] = useState("income");
 
-  const {refetchBalanceData } = useContext(balanceContext)
+  const {refetchBalanceData } = useContext(balanceContext)!
+  const {expenseCategories , incomeCategories} = useContext(CategoriesContext)!
   const {refetchUser} = useContext(UserContext)!
 
   const {
@@ -213,12 +215,13 @@ export default function BalanceAddModal({
                       className="block w-full pl-10 pr-3 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
                     >
                       <option value="">Select category</option>
-
-                      <option value="salary">Salary</option>
-                      <option value="freelance">Freelance</option>
-                      <option value="investment">Investment</option>
-                      <option value="business">Business</option>
-                      <option value="other">Other</option>
+                     {
+                      incomeCategories.map((category) => (
+                        <option key={category._id} value={category.name}>
+                          {category.name}
+                        </option>
+                      ))
+                     }
                     </select>
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useContext, useState } from "react";
 import {
   X,
@@ -20,6 +20,7 @@ import balanceContext from "@/app/context/BalanceContext";
 import UserContext from "@/app/context/UserContext";
 import expenseContext from "@/app/context/ExpenseContext";
 import budgetContext from "@/app/context/BudgetContext";
+import CategoriesContext from "@/app/context/CategoriesContext";
 
 interface Balance {
   date: string;
@@ -35,13 +36,12 @@ export default function ExpenseAddModal({
 }: {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-
-
-  const {refetchBalanceData } = useContext(balanceContext)!
-  const {refetchUser} = useContext(UserContext)!
-  const {refetchTotalExpenseByMonthData , refetchExpenseData} = useContext(expenseContext)!
-  const {refetchBudgetByMonthData} = useContext(budgetContext)!
-
+  const { refetchBalanceData } = useContext(balanceContext)!;
+  const { refetchUser } = useContext(UserContext)!;
+  const { refetchTotalExpenseByMonthData, refetchExpenseData } =
+    useContext(expenseContext)!;
+  const { refetchBudgetByMonthData } = useContext(budgetContext)!;
+  const { expenseCategories } = useContext(CategoriesContext)!;
 
   const {
     register,
@@ -49,8 +49,6 @@ export default function ExpenseAddModal({
     formState: { errors },
   } = useForm<Balance>();
   const { data: session } = useSession();
-
-
 
   const onSubmit = async (data: Balance) => {
     const newData = {
@@ -66,15 +64,15 @@ export default function ExpenseAddModal({
           withCredentials: true,
         },
       );
-     if(res.status === 201){
-      refetchBalanceData()
-      refetchUser()
-      refetchTotalExpenseByMonthData()
-      refetchBudgetByMonthData()
-      refetchExpenseData()
-      toast.success("Transaction added successfully!");
-      setIsOpen(false);
-     }
+      if (res.status === 201) {
+        refetchBalanceData();
+        refetchUser();
+        refetchTotalExpenseByMonthData();
+        refetchBudgetByMonthData();
+        refetchExpenseData();
+        toast.success("Transaction added successfully!");
+        setIsOpen(false);
+      }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.log(error);
@@ -108,7 +106,6 @@ export default function ExpenseAddModal({
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="p-3">
               {/* Transaction Type Toggle */}
-             
 
               {/* Form Fields Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -209,11 +206,11 @@ export default function ExpenseAddModal({
                     >
                       <option value="">Select category</option>
 
-                      <option value="salary">Salary</option>
-                      <option value="freelance">Freelance</option>
-                      <option value="investment">Investment</option>
-                      <option value="business">Business</option>
-                      <option value="other">Other</option>
+                      {expenseCategories.map((category) => (
+                        <option key={category._id} value={category.name}>
+                          {category.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
