@@ -41,7 +41,7 @@ export default function IncomeTable() {
 
 const {balanceData , setStartDate , setEndDate ,refetchBalanceData, isBalanceLoading , page , startDate , endDate , setPage } = useContext(balanceContext)!
 
-console.log(balanceData)
+
 
 
   const pagination = balanceData?.pagination || null;

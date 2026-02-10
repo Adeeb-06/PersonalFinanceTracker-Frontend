@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   PieChart,
   Pie,
@@ -19,114 +19,95 @@ import {
   Film,
   CreditCard,
 } from "lucide-react";
+import CategoriesContext from "@/app/context/CategoriesContext";
 
 export default function CategoryAnalytics() {
-  const [selectedCategory, setSelectedCategory] = useState("groceries");
-  const [selectedMonth, setSelectedMonth] = useState("2026-02");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Categories with icons
-  const categories = [
-    {
-      id: "groceries",
-      name: "Groceries",
-      icon: ShoppingCart,
-      color: "#10b981",
-    },
-    { id: "dining", name: "Dining", icon: Utensils, color: "#f59e0b" },
-    { id: "transport", name: "Transport", icon: Car, color: "#3b82f6" },
-    { id: "utilities", name: "Utilities", icon: Home, color: "#8b5cf6" },
-    { id: "healthcare", name: "Healthcare", icon: Heart, color: "#ef4444" },
-    {
-      id: "entertainment",
-      name: "Entertainment",
-      icon: Film,
-      color: "#ec4899",
-    },
-    { id: "shopping", name: "Shopping", icon: CreditCard, color: "#06b6d4" },
-  ];
+  const {
+    category,
+    month,
+    year,
+    categoryAnalytics,
+    categoryAnalyticsLoading,
+    refetchCategoryAnalytics,
+    categoryAnalyticsError,
+    setCategory,
+    setMonth,
+    setYear,
+    incomeCategories,
+    expenseCategories,
+  } = useContext(CategoriesContext)!;
 
-  // Mock data - replace with actual data
-  const categoryData = {
-    groceries: {
-      currentMonthSpend: 850.5,
-      lastMonthSpend: 920.3,
-      pieData: [
-        { name: "Groceries", value: 850.5, color: "#10b981" },
-        { name: "Others", value: 2430.0, color: "#FCFAF1" },
-      ],
-    },
-    dining: {
-      currentMonthSpend: 420.75,
-      lastMonthSpend: 385.6,
-      pieData: [
-        { name: "Dining", value: 420.75, color: "#f59e0b" },
-        { name: "Others", value: 2859.75, color: "#374151" },
-      ],
-    },
-    transport: {
-      currentMonthSpend: 380.0,
-      lastMonthSpend: 410.5,
-      pieData: [
-        { name: "Transport", value: 380.0, color: "#3b82f6" },
-        { name: "Others", value: 2900.5, color: "#374151" },
-      ],
-    },
-    utilities: {
-      currentMonthSpend: 520.25,
-      lastMonthSpend: 515.0,
-      pieData: [
-        { name: "Utilities", value: 520.25, color: "#8b5cf6" },
-        { name: "Others", value: 2760.25, color: "#374151" },
-      ],
-    },
-    healthcare: {
-      currentMonthSpend: 265.0,
-      lastMonthSpend: 180.0,
-      pieData: [
-        { name: "Healthcare", value: 265.0, color: "#ef4444" },
-        { name: "Others", value: 3015.5, color: "#374151" },
-      ],
-    },
-    entertainment: {
-      currentMonthSpend: 345.8,
-      lastMonthSpend: 290.5,
-      pieData: [
-        { name: "Entertainment", value: 345.8, color: "#ec4899" },
-        { name: "Others", value: 2934.7, color: "#374151" },
-      ],
-    },
-    shopping: {
-      currentMonthSpend: 498.2,
-      lastMonthSpend: 625.4,
-      pieData: [
-        { name: "Shopping", value: 498.2, color: "#06b6d4" },
-        { name: "Others", value: 2782.3, color: "#374151" },
-      ],
-    },
-  };
+  // Use expense categories for spending breakdown
+  const categoriesToDisplay = incomeCategories || [];
 
-  const currentCategory = categories.find((cat) => cat.id === selectedCategory);
-  const data = categoryData[selectedCategory];
-  const percentageChange = (
-    ((data.currentMonthSpend - data.lastMonthSpend) / data.lastMonthSpend) *
-    100
-  ).toFixed(1);
-  const isIncrease = data.currentMonthSpend > data.lastMonthSpend;
+  // Auto-select first category if none selected
+  useEffect(() => {
+    if (!selectedCategory && categoriesToDisplay.length > 0) {
+      setSelectedCategory(categoriesToDisplay[0]._id);
+    }
+  }, [categoriesToDisplay, selectedCategory]);
+
+  // Sync state with context
+  useEffect(() => {
+    if (selectedCategory) {
+      console.log(selectedCategory)
+      setCategory(selectedCategory);
+    }
+  }, [selectedCategory, setCategory]);
+
+  useEffect(() => {
+    const m = selectedDate.getMonth() + 1; // 1-based month
+    const y = selectedDate.getFullYear();
+    setMonth(m);
+    setYear(y);
+  }, [selectedDate, setMonth, setYear]);
+
+  const currentCategory = categoriesToDisplay?.find(
+    (cat) => cat._id === selectedCategory,
+  );
+  const data = categoryAnalytics?.data;
+
+  // Safety checks for data
+  const totalAmount = data?.totalAmount || 0;
+  const lastMonthAmount = data?.lastMonthAmount || 0;
+
+  const percentageChange =
+    lastMonthAmount !== 0
+      ? (((totalAmount - lastMonthAmount) / lastMonthAmount) * 100).toFixed(1)
+      : "0.0";
+
+  const isIncrease = totalAmount > lastMonthAmount;
 
   const PIE_COLORS = ["#FCFAF1", "#374151"];
 
+  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value) {
+      const [y, m] = e.target.value.split("-");
+      // Create date at start of month to avoid overflow issues (e.g. Feb 30)
+      const newDate = new Date(parseInt(y), parseInt(m) - 1, 1);
+      setSelectedDate(newDate);
+    }
+  };
+
+  // Format date for input value (YYYY-MM)
+  const monthInputValue = `${selectedDate.getFullYear()}-${String(
+    selectedDate.getMonth() + 1,
+  ).padStart(2, "0")}`;
+
   return (
-    <div className="w-full space-y-3 mt-8">
+    <div className="w-full space-y-3">
       {/* Category Tabs */}
       <div className="flex bg-secondary p-4 rounded-xl flex-wrap gap-2">
-        {categories.map((category) => {
-          const Icon = category.icon;
-          const isActive = selectedCategory === category.id;
+        {categoriesToDisplay?.map((category) => {
+          const isActive = selectedCategory === category.name;
 
           return (
             <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
+              key={category._id}
+              onClick={() => setSelectedCategory(category.name)}
               className={`
                 flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200
                 ${
@@ -136,7 +117,6 @@ export default function CategoryAnalytics() {
                 }
               `}
             >
-              <Icon className="w-4 h-4" />
               <span className="text-sm">{category.name}</span>
             </button>
           );
@@ -149,11 +129,11 @@ export default function CategoryAnalytics() {
           {/* Left Side - Pie Chart */}
           <div className="flex flex-col">
             <div className="flex items-center gap-3 mb-6">
-              {currentCategory && (
+              {selectedCategory && (
                 <>
                   <div>
                     <h3 className="text-2xl font-bold text-primary">
-                      {currentCategory.name} Analytics
+                      {selectedCategory} Analytics
                     </h3>
                     <p className="text-sm text-primary/80">
                       Spending breakdown
@@ -168,7 +148,7 @@ export default function CategoryAnalytics() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={data.pieData}
+                    data={data?.pieData || []}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -176,7 +156,7 @@ export default function CategoryAnalytics() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {data.pieData.map((entry: any, index: number) => (
+                    {data?.pieData?.map((entry: any, index: number) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={PIE_COLORS[index % PIE_COLORS.length]}
@@ -201,7 +181,7 @@ export default function CategoryAnalytics() {
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-primary"></div>
                 <span className="text-sm text-gray-400">
-                  {currentCategory?.name}
+                  {currentCategory?.name || "Category"}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -222,8 +202,8 @@ export default function CategoryAnalytics() {
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
                   type="month"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  value={monthInputValue}
+                  onChange={handleMonthChange}
                   className="w-full pl-11 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
                 />
               </div>
@@ -236,14 +216,14 @@ export default function CategoryAnalytics() {
               </p>
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold text-white">
-                  ${data.currentMonthSpend.toFixed(0)}
+                  ${totalAmount.toFixed(0)}
                 </span>
                 <span className="text-xl font-semibold text-gray-500">
-                  .{(data.currentMonthSpend % 1).toFixed(2).split(".")[1]}
+                  .{(totalAmount % 1).toFixed(2).split(".")[1]}
                 </span>
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                {new Date(selectedMonth + "-01").toLocaleDateString("en-US", {
+                {selectedDate.toLocaleDateString("en-US", {
                   month: "long",
                   year: "numeric",
                 })}
@@ -257,7 +237,7 @@ export default function CategoryAnalytics() {
               </p>
               <div className="flex items-baseline gap-2 mb-3">
                 <span className="text-2xl font-bold text-gray-300">
-                  ${data.lastMonthSpend.toFixed(2)}
+                  ${lastMonthAmount.toFixed(2)}
                 </span>
               </div>
 
@@ -295,24 +275,31 @@ export default function CategoryAnalytics() {
                   <span className="text-sm text-gray-400">
                     Total Transactions
                   </span>
-                  <span className="text-sm font-bold text-white">23</span>
+                  <span className="text-sm font-bold text-white">
+                    {data?.totalTransactions || 0}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">
                     Average per Transaction
                   </span>
                   <span className="text-sm font-bold text-white">
-                    ${(data.currentMonthSpend / 23).toFixed(2)}
+                    $
+                    {(
+                      (data?.totalAmount || 0) / (data?.totalTransactions || 1)
+                    ).toFixed(2)}
                   </span>
                 </div>
+                {/* 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">
                     % of Total Expenses
                   </span>
                   <span className="text-sm font-bold text-white">
-                    {((data.currentMonthSpend / 3280.5) * 100).toFixed(1)}%
+                     NA%
                   </span>
                 </div>
+                */}
               </div>
             </div>
           </div>

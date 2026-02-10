@@ -11,6 +11,10 @@ interface CategoryProviderProps {
 
 const CategoryProvider = ({ children }: CategoryProviderProps) => {
   const { data: session } = useSession();
+  const [month , setMonth] = useState<number>();
+  const [year , setYear] = useState<number>();
+  const [category , setCategory] = useState<string>();
+
 
   const fetchIncomeCategories = async () => {
     if (!session?.user?.email) return [];
@@ -34,6 +38,24 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     return res.data.data;
   };
 
+  
+  const fetchCategoryAnalytics = async (
+    category: string,
+    month: number,
+    year: number,
+  ) => {
+    if (!session?.user?.email) return [];
+    const res = await axios.get(
+      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${category}&month=${month}&year=${year}`,
+      {
+        withCredentials: true,
+      },
+    );
+    console.log(res , "fds")
+    return res.data;
+  };
+
+
   const {
     data: incomeCategories,
     isLoading: incomeCategoriesLoading,
@@ -56,7 +78,28 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     enabled: !!session?.user?.email,
   });
 
+  const {
+    data: categoryAnalytics,
+    isLoading: categoryAnalyticsLoading,
+    refetch: refetchCategoryAnalytics,
+    error: categoryAnalyticsError,
+  } = useQuery({
+    queryKey: ["categoryAnalytics", session?.user?.email, month, year, category],
+    queryFn: () => fetchCategoryAnalytics(category!, month!, year!),
+    enabled: !!session?.user?.email && !!month && !!year && !!category,
+  });
+
   const data = {
+    setCategory,
+    setMonth,
+    setYear,
+    category,
+    month,
+    year,
+    categoryAnalytics,
+    categoryAnalyticsLoading,
+    refetchCategoryAnalytics,
+    categoryAnalyticsError,
     incomeCategories,
     expenseCategories,
     refetchExpenseCategories,

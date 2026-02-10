@@ -17,6 +17,16 @@ export interface CategoriesContextType {
   expenseCategoriesLoading: boolean;
   incomeCategoriesError: unknown;
   expenseCategoriesError: unknown;
+  category: string;
+  month: number;
+  year: number;
+  categoryAnalytics: any;
+  categoryAnalyticsLoading: boolean;
+  refetchCategoryAnalytics: () => void;
+  categoryAnalyticsError: unknown;
+  setCategory: (category: string) => void;
+  setMonth: (month: number) => void;
+  setYear: (year: number) => void;
 }
 
 const CategoriesContext = createContext<CategoriesContextType | null>(null);
