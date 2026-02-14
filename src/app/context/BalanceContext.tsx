@@ -32,6 +32,11 @@ interface BalanceContextType {
   balanceData?: BalanceResponse;
   refetchBalanceData: () => Promise<QueryObserverResult<BalanceItem[], Error>>;
   isBalanceLoading: boolean;
+  incomeId: string;
+  setIncomeId: Dispatch<SetStateAction<string>>;
+  incomeDataById?: BalanceItem;
+  refetchIncomeDataById: () => Promise<QueryObserverResult<BalanceItem[], Error>>;
+  isIncomeDataByIdLoading: boolean;
 
 
 }

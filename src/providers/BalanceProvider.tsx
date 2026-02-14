@@ -15,6 +15,7 @@ const BalanceProvider = ({ children }: Props) => {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [page, setPage] = useState<number>(1);
+  const [incomeId, setIncomeId] = useState<string>("");
   const { data: session } = useSession();
 
   const fetchBalanceData = async () => {
@@ -44,6 +45,22 @@ const BalanceProvider = ({ children }: Props) => {
     }
   };
 
+  const fetchIncomeDataById = async (incomeId: string) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:9000/api/balance/get-income-by-id/${incomeId}`,
+        {
+          withCredentials: true,
+        },
+      );
+      console.log(res, "income prov");
+      return res.data;
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch income data.");
+    }
+  };
+
   const {
     data: balanceData,
     isLoading: isBalanceLoading,
@@ -53,6 +70,17 @@ const BalanceProvider = ({ children }: Props) => {
     queryKey: ["balanceData", session?.user?.email, page],
     queryFn: () => fetchBalanceData(),
     enabled: !!session?.user?.email,
+  });
+
+  const {
+    data: incomeDataById,
+    isLoading: isIncomeDataByIdLoading,
+    error: incomeDataByIdError,
+    refetch: refetchIncomeDataById,
+  } = useQuery({
+    queryKey: ["incomeDataById", incomeId],
+    queryFn: () => fetchIncomeDataById(incomeId),
+    enabled: !!incomeId,
   });
 
   const data = {
@@ -67,13 +95,15 @@ const BalanceProvider = ({ children }: Props) => {
     balanceData,
     refetchBalanceData,
     isBalanceLoading,
-    
-  }
+    incomeId,
+    setIncomeId,
+    incomeDataById,
+    refetchIncomeDataById,
+    isIncomeDataByIdLoading,
+  };
 
   return (
-    <balanceContext.Provider value={data}>
-      {children}
-    </balanceContext.Provider>
+    <balanceContext.Provider value={data}>{children}</balanceContext.Provider>
   );
 };
 

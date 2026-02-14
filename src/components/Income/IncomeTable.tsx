@@ -19,6 +19,7 @@ import { BalanceTableSkeleton } from "../Skeletons/BalanceTableSkeleton";
 import { NoTransactions } from "../Skeletons/NoTransaction";
 import balanceContext from "@/app/context/BalanceContext";
 import DeleteConfirmationModal from "../Modals/ConfirmDelete";
+import IncomeUpdateModal from "./IncomeUpdateModal";
 
 interface Pagination {
   currentPage: string | number;
@@ -38,6 +39,7 @@ interface Transaction {
 export default function IncomeTable() {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isUpdateOpen , setIsUpdateOpen] = useState(false);
   const [name, setName] = useState("");
   const [id, setId] = useState<string>("");
   const { data: session, status } = useSession();
@@ -215,7 +217,10 @@ export default function IncomeTable() {
                       >
                         <XIcon size={15} />
                       </button>
-                      <button className="btn btn-sm btn-success">
+                      <button onClick={()=>{
+                        setIsUpdateOpen(true)
+                        setId(transaction._id)
+                      }} className="btn btn-sm btn-success">
                         <Edit2 size={15} />
                       </button>
                     </div>
@@ -277,6 +282,14 @@ export default function IncomeTable() {
           itemType="income"
         />
       )}
+      {
+        isUpdateOpen && (
+          <IncomeUpdateModal
+            setIsOpen={setIsUpdateOpen}
+            incomeId={id}
+          />
+        )
+      }
     </div>
   );
 }
