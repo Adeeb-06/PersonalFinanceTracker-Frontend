@@ -66,6 +66,8 @@ export default function IncomeCategoryAnalytics() {
   );
   const data = incomeCategoryAnalytics?.data;
 
+  console.log(data)
+
   // Safety checks for data
   const totalAmount = data?.totalAmount || 0;
   const lastMonthAmount = data?.lastMonthAmount || 0;

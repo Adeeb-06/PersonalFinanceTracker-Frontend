@@ -65,13 +65,27 @@ const AddCategories = () => {
     }
   };
 
-  const removeCategory = (type: "income" | "expense", cat: string) => {
-    if (type === "income") {
-      refetchIncomeCategories();
-    } else {
-      refetchExpenseCategories();
-    }
-    toast.info("Category removed");
+  const removeCategory = async(type: "income" | "expense", cat: string) => {
+     try{
+      const res = await axios.delete(
+        `http://localhost:9000/api/categories/${cat}`,
+        {
+          withCredentials: true,
+        },
+      );
+      console.log(res);
+      if (res.status === 200) {
+        if (type === "income") {
+          refetchIncomeCategories();
+        } else {
+          refetchExpenseCategories();
+        }
+        toast.info("Category removed");
+      }
+     }catch(error:any){
+      console.log(error);
+      toast.error(error.response.data.message || "Failed to remove category");
+     }
   };
   return (
     <div className="grid md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
