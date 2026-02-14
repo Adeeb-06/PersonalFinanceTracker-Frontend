@@ -21,23 +21,19 @@ import {
 } from "lucide-react";
 import CategoriesContext from "@/app/context/CategoriesContext";
 
-export default function CategoryAnalytics() {
+export default function IncomeCategoryAnalytics() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const {
-    category,
-    month,
-    year,
-    categoryAnalytics,
-    categoryAnalyticsLoading,
-    refetchCategoryAnalytics,
-    categoryAnalyticsError,
-    setCategory,
+    incomeCategoryAnalytics,
+    incomeCategoryAnalyticsLoading,
+    refetchIncomeCategoryAnalytics,
+    incomeCategoryAnalyticsError,
+    setIncomeCategory,
     setMonth,
     setYear,
     incomeCategories,
-    expenseCategories,
   } = useContext(CategoriesContext)!;
 
   // Use expense categories for spending breakdown
@@ -46,7 +42,7 @@ export default function CategoryAnalytics() {
   // Auto-select first category if none selected
   useEffect(() => {
     if (!selectedCategory && categoriesToDisplay.length > 0) {
-      setSelectedCategory(categoriesToDisplay[0]._id);
+      setSelectedCategory(categoriesToDisplay[0].name);
     }
   }, [categoriesToDisplay, selectedCategory]);
 
@@ -54,9 +50,9 @@ export default function CategoryAnalytics() {
   useEffect(() => {
     if (selectedCategory) {
       console.log(selectedCategory)
-      setCategory(selectedCategory);
+      setIncomeCategory(selectedCategory);
     }
-  }, [selectedCategory, setCategory]);
+  }, [selectedCategory, setIncomeCategory]);
 
   useEffect(() => {
     const m = selectedDate.getMonth() + 1; // 1-based month
@@ -66,9 +62,9 @@ export default function CategoryAnalytics() {
   }, [selectedDate, setMonth, setYear]);
 
   const currentCategory = categoriesToDisplay?.find(
-    (cat) => cat._id === selectedCategory,
+    (cat) => cat.name === selectedCategory,
   );
-  const data = categoryAnalytics?.data;
+  const data = incomeCategoryAnalytics?.data;
 
   // Safety checks for data
   const totalAmount = data?.totalAmount || 0;
@@ -136,7 +132,7 @@ export default function CategoryAnalytics() {
                       {selectedCategory} Analytics
                     </h3>
                     <p className="text-sm text-primary/80">
-                      Spending breakdown
+                      Income breakdown
                     </p>
                   </div>
                 </>
@@ -212,7 +208,7 @@ export default function CategoryAnalytics() {
             {/* Current Month Spend */}
             <div className="bg-gray-800 bg-opacity-50 rounded-xl p-5 border border-gray-700">
               <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
-                Current Month Spend
+                Current Month Income
               </p>
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold text-white">
@@ -233,7 +229,7 @@ export default function CategoryAnalytics() {
             {/* Last Month Comparison */}
             <div className="bg-gray-800 bg-opacity-50 rounded-xl p-5 border border-gray-700">
               <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
-                Last Month Spend
+                Last Month Income
               </p>
               <div className="flex items-baseline gap-2 mb-3">
                 <span className="text-2xl font-bold text-gray-300">
@@ -245,13 +241,13 @@ export default function CategoryAnalytics() {
               <div
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
                   isIncrease
-                    ? "bg-red-500 bg-opacity-10"
-                    : "bg-green-500 bg-opacity-10"
+                    ? "bg-green-500 bg-opacity-10"
+                    : "bg-red-500 bg-opacity-10"
                 }`}
               >
                 <TrendingDown
                   className={`w-4 h-4 ${
-                    isIncrease ? "text-primary rotate-180" : "text-primary"
+                    isIncrease ? "text-primary  " : "text-primary rotate-180"
                   }`}
                 />
                 <span
@@ -290,16 +286,16 @@ export default function CategoryAnalytics() {
                     ).toFixed(2)}
                   </span>
                 </div>
-                {/* 
+                
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">
                     % of Total Expenses
                   </span>
                   <span className="text-sm font-bold text-white">
-                     NA%
+                     {data?.percentageOfTotal?.toFixed(2) || 0}%
                   </span>
                 </div>
-                */}
+               
               </div>
             </div>
           </div>

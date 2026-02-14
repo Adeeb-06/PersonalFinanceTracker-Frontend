@@ -37,7 +37,6 @@ export default function Sidebar() {
       label: "Analytics",
       href: "/dashboard/category-analytics",
     },
-    { icon: Bell, label: "Notifications" },
     { icon: Settings, label: "Settings", href: "/dashboard/settings" },
   ];
 

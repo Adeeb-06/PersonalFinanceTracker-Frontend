@@ -11,10 +11,11 @@ interface CategoryProviderProps {
 
 const CategoryProvider = ({ children }: CategoryProviderProps) => {
   const { data: session } = useSession();
-  const [month , setMonth] = useState<number>();
-  const [year , setYear] = useState<number>();
-  const [category , setCategory] = useState<string>();
-
+  const [month, setMonth] = useState<number>();
+  const [year, setYear] = useState<number>();
+  const [category, setCategory] = useState<string>();
+  const [expenseCategory , setExpenseCategory] = useState<string>();
+  const [incomeCategory , setIncomeCategory] = useState<string>();
 
   const fetchIncomeCategories = async () => {
     if (!session?.user?.email) return [];
@@ -38,7 +39,6 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     return res.data.data;
   };
 
-  
   const fetchCategoryAnalytics = async (
     category: string,
     month: number,
@@ -51,10 +51,39 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
         withCredentials: true,
       },
     );
-    console.log(res , "fds")
     return res.data;
   };
 
+  const fetchExpenseCategoryAnalytics = async (
+    category: string,
+    month: number,
+    year: number,
+  ) => {
+    if (!session?.user?.email) return [];
+    const res = await axios.get(
+      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${expenseCategory}&month=${month}&year=${year}`,
+      {
+        withCredentials: true,
+      },
+    );
+    console.log(res)
+    return res.data;
+  };
+
+  const fetchIncomeCategoryAnalytics = async (
+    category: string,
+    month: number,
+    year: number,
+  ) => {
+    if (!session?.user?.email) return [];
+    const res = await axios.get(
+      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${incomeCategory}&month=${month}&year=${year}`,
+      {
+        withCredentials: true,
+      },
+    );
+    return res.data;
+  };
 
   const {
     data: incomeCategories,
@@ -84,9 +113,50 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     refetch: refetchCategoryAnalytics,
     error: categoryAnalyticsError,
   } = useQuery({
-    queryKey: ["categoryAnalytics", session?.user?.email, month, year, category],
+    queryKey: [
+      "categoryAnalytics",
+      session?.user?.email,
+      month,
+      year,
+      category,
+    ],
     queryFn: () => fetchCategoryAnalytics(category!, month!, year!),
     enabled: !!session?.user?.email && !!month && !!year && !!category,
+  });
+
+
+  const {
+    data: expenseCategoryAnalytics,
+    isLoading: expenseCategoryAnalyticsLoading,
+    refetch: refetchExpenseCategoryAnalytics,
+    error: expenseCategoryAnalyticsError,
+  } = useQuery({
+    queryKey: [
+      "expenseCategoryAnalytics",
+      session?.user?.email,
+      month,
+      year,
+      expenseCategory,
+    ],
+    queryFn: () => fetchExpenseCategoryAnalytics(expenseCategory!, month!, year!),
+    enabled: !!session?.user?.email && !!month && !!year && !!expenseCategory,
+  });
+
+  const {
+    data: incomeCategoryAnalytics,
+    isLoading: incomeCategoryAnalyticsLoading,
+    refetch: refetchIncomeCategoryAnalytics,
+    error: incomeCategoryAnalyticsError,
+  } = useQuery({
+    queryKey: [
+      "incomeCategoryAnalytics",
+      session?.user?.email,
+      month,
+      year,
+      incomeCategory,
+    ],
+    queryFn: () => fetchIncomeCategoryAnalytics(incomeCategory!, month!, year!),
+    enabled: !!session?.user?.email && !!month && !!year && !!incomeCategory,
   });
 
   const data = {
@@ -108,6 +178,18 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     expenseCategoriesLoading,
     incomeCategoriesError,
     expenseCategoriesError,
+    expenseCategory,
+    setExpenseCategory,
+    incomeCategory,
+    setIncomeCategory,
+    expenseCategoryAnalytics,
+    expenseCategoryAnalyticsLoading,
+    refetchExpenseCategoryAnalytics,
+    expenseCategoryAnalyticsError,
+    incomeCategoryAnalytics,
+    incomeCategoryAnalyticsLoading,
+    refetchIncomeCategoryAnalytics,
+    incomeCategoryAnalyticsError,
   };
   return (
     <CategoriesContext.Provider value={data}>
