@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   X,
   Calendar,
@@ -31,24 +31,48 @@ interface Balance {
   description: string;
 }
 
-export default function ExpenseAddModal({
+export default function ExpenseUpdateModal({
   setIsOpen,
+  expenseId
 }: {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  expenseId: string;
 }) {
   const { refetchBalanceData } = useContext(balanceContext)!;
   const { refetchUser } = useContext(UserContext)!;
-  const { refetchTotalExpenseByMonthData, refetchExpenseData } =
-    useContext(expenseContext)!;
+  const {
+    refetchTotalExpenseByMonthData,
+    refetchExpenseData,
+    expenseDataById,
+    setExpenseId,
+  } = useContext(expenseContext)!;
   const { refetchBudgetByMonthData , refetchBudgetData } = useContext(budgetContext)!;
   const { expenseCategories } = useContext(CategoriesContext)!;
+
+
+  useEffect(() => {
+    if (expenseId) {
+      setExpenseId(expenseId);
+    }
+  }, [expenseId]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm<Balance>();
   const { data: session } = useSession();
+
+  useEffect(()=>{
+        reset({
+      date: expenseDataById?.date.split("T")[0],
+      time: expenseDataById?.time,
+      amount: expenseDataById?.amount,
+      category: expenseDataById?.category,
+      description: expenseDataById?.description,
+    })
+  },[expenseDataById])
 
   const onSubmit = async (data: Balance) => {
     const newData = {
@@ -57,8 +81,8 @@ export default function ExpenseAddModal({
     };
     console.log(newData);
     try {
-      const res = await axios.post(
-        "http://localhost:9000/api/expense/add-expense",
+      const res = await axios.put(
+        `http://localhost:9000/api/expense/update-expense/${expenseId}`,
         newData,
         {
           withCredentials: true,
@@ -71,18 +95,20 @@ export default function ExpenseAddModal({
         refetchBudgetByMonthData();
         refetchBudgetData();
         refetchExpenseData();
-        toast.success("Transaction added successfully!");
+        toast.success("Transaction updated successfully!");
         setIsOpen(false);
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.log(error);
-        toast.error(error.response?.data?.message || "Creation failed!");
+        toast.error(error.message || "Updation failed!");
       } else {
         toast.error("Something went wrong. Please try again.");
       }
     }
   };
+
+  console.log(expenseDataById)
 
   return (
     <>
@@ -92,9 +118,9 @@ export default function ExpenseAddModal({
           {/* Modal Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-800">
             <div>
-              <h2 className="text-2xl font-bold text-white">Add Expense</h2>
+              <h2 className="text-2xl font-bold text-white">Update Expense</h2>
               <p className="text-sm text-gray-400 mt-1">
-                Create a new expense entry
+                Update your expense entry
               </p>
             </div>
             <button

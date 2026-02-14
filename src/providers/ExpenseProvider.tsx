@@ -14,6 +14,7 @@ const ExpenseProvider = ({ children }: Props) => {
   const [limit, setLimit] = useState<number>(10);
   const [monthExpense, setMonthExpense] = useState<number>()
   const [year , setYear] = useState<number>()
+  const [expenseId, setExpenseId] = useState<string>()
 
   const { data: session } = useSession();
 
@@ -68,6 +69,32 @@ const ExpenseProvider = ({ children }: Props) => {
     queryFn: () => fetchTotalExpenseByMonth(),
     enabled: !!session?.user?.email,
   });
+
+  const fetchExpenseById = async (id: string) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:9000/api/expense/get-expense-by-id/${expenseId}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return res.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  const {
+    data:expenseDataById,
+    isLoading:isExpenseDataByIdLoading,
+    error:expenseDataByIdError,
+    refetch:refetchExpenseDataById,
+  } = useQuery({
+    queryKey: ["expenseDataById", session?.user?.email, expenseId],
+    queryFn: () => fetchExpenseById(expenseId!),
+    enabled: !!session?.user?.email,
+  });
   
 
   const data = {
@@ -82,6 +109,12 @@ const ExpenseProvider = ({ children }: Props) => {
     totalExpenseByMonthData,
     refetchTotalExpenseByMonthData,
     isTotalExpenseByMonthLoading,
+    expenseDataById,
+    refetchExpenseDataById,
+    isExpenseDataByIdLoading,
+    expenseDataByIdError,
+    setExpenseId,
+    expenseId,
     
   };
   return (

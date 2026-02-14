@@ -3,7 +3,7 @@ import { QueryObserverResult } from "@tanstack/react-query";
 import React ,{ createContext } from "react";
 
 interface ExpenseItem {
-   _id: string | number;
+   _id: string;
   date: string;
   time: string;
   amount: number;
@@ -38,6 +38,12 @@ interface ExpenseContextType {
    totalExpenseByMonthData: TotalExpenseByMonth;
    refetchTotalExpenseByMonthData: () => Promise<QueryObserverResult<TotalExpenseByMonth[], Error>>;
    isTotalExpenseByMonthLoading: boolean;
+   expenseDataById: ExpenseItem;
+   refetchExpenseDataById: () => Promise<QueryObserverResult<ExpenseItem[], Error>>;
+   isExpenseDataByIdLoading: boolean;
+   expenseDataByIdError: Error;
+   setExpenseId: React.Dispatch<React.SetStateAction<string | undefined>>;
+   expenseId: string | undefined;
 }
 
 

@@ -20,6 +20,7 @@ import { BalanceTableSkeleton } from "./Skeletons/BalanceTableSkeleton";
 import balanceContext from "@/app/context/BalanceContext";
 import expenseContext from "@/app/context/ExpenseContext";
 import { NoTransactions } from "./Skeletons/NoTransaction";
+import ExpenseUpdateModal from "./ExpenseUpdateModal";
 
 interface Pagination {
   currentPage: string | number;
@@ -28,7 +29,7 @@ interface Pagination {
 }
 
 interface Transaction {
-  _id: string | number;
+  _id: string;
   date: string;
   time: string;
   amount: number;
@@ -38,9 +39,18 @@ interface Transaction {
 
 export default function ExpenseTable() {
   const { data: session, status } = useSession();
+  const [isOpen , setIsOpen] =  useState(false);
+  const [id , setId] = useState<string>("");
 
-  const { expenseData, refetchExpenseData, isExpenseLoading, page, setPage } =
-    useContext(expenseContext)!;
+  const {
+    expenseData,
+    refetchExpenseData,
+    isExpenseLoading,
+    page,
+    setPage,
+    setExpenseId,
+    expenseDataById,
+  } = useContext(expenseContext)!;
 
   console.log(expenseData);
 
@@ -65,6 +75,8 @@ export default function ExpenseTable() {
       year: "numeric",
     });
   };
+
+
 
   const transactions = expenseData?.data ?? [];
 
@@ -183,7 +195,10 @@ export default function ExpenseTable() {
                       <button className="btn btn-sm btn-error">
                         <XIcon size={15} />
                       </button>
-                      <button className="btn btn-sm btn-success">
+                      <button onClick={() => {
+                        setIsOpen(true);
+                        setId(transaction._id);
+                      }} className="btn btn-sm btn-success">
                         <Edit2 size={15} />
                       </button>
                     </div>
@@ -236,6 +251,9 @@ export default function ExpenseTable() {
           </button>
         </div>
       </div>
+      {
+        isOpen && <ExpenseUpdateModal setIsOpen={setIsOpen} expenseId={id} />
+      }
     </div>
   );
 }

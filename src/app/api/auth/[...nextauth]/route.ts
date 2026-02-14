@@ -28,7 +28,7 @@ export const authOptions = {
         const res = await axios.get("http://localhost:9000/api/users");
         const user = res.data.find((u: User) => u.email === email);
 
-        console.log(user, res);
+
 
         if (!user) {
           throw new Error("No User Found with the Email");
@@ -80,7 +80,7 @@ export const authOptions = {
 ,
     async jwt({ token, user , account}: { token: JWT; user?: User , account?: Account }) {
 
-      console.log(user , "ATUHHH")
+
       if (user) {
         token.email = user.email;
         token.id = user.id;
