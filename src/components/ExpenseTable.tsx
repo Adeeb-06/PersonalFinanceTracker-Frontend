@@ -21,6 +21,7 @@ import balanceContext from "@/app/context/BalanceContext";
 import expenseContext from "@/app/context/ExpenseContext";
 import { NoTransactions } from "./Skeletons/NoTransaction";
 import ExpenseUpdateModal from "./ExpenseUpdateModal";
+import DeleteConfirmationModal from "./Modals/ConfirmDelete";
 
 interface Pagination {
   currentPage: string | number;
@@ -39,8 +40,10 @@ interface Transaction {
 
 export default function ExpenseTable() {
   const { data: session, status } = useSession();
-  const [isOpen , setIsOpen] =  useState(false);
-  const [id , setId] = useState<string>("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [id, setId] = useState<string>("");
+  const [itemName, setItemName] = useState<string>("");
 
   const {
     expenseData,
@@ -75,8 +78,6 @@ export default function ExpenseTable() {
       year: "numeric",
     });
   };
-
-
 
   const transactions = expenseData?.data ?? [];
 
@@ -192,13 +193,23 @@ export default function ExpenseTable() {
                   {/* Actions */}
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="relative flex justify-center gap-5">
-                      <button className="btn btn-sm btn-error">
+                      <button
+                        onClick={() => {
+                          setIsDeleteOpen(true);
+                          setId(transaction._id);
+                          setItemName(transaction.category);
+                        }}
+                        className="btn btn-sm btn-error"
+                      >
                         <XIcon size={15} />
                       </button>
-                      <button onClick={() => {
-                        setIsOpen(true);
-                        setId(transaction._id);
-                      }} className="btn btn-sm btn-success">
+                      <button
+                        onClick={() => {
+                          setIsOpen(true);
+                          setId(transaction._id);
+                        }}
+                        className="btn btn-sm btn-success"
+                      >
                         <Edit2 size={15} />
                       </button>
                     </div>
@@ -251,9 +262,16 @@ export default function ExpenseTable() {
           </button>
         </div>
       </div>
-      {
-        isOpen && <ExpenseUpdateModal setIsOpen={setIsOpen} expenseId={id} />
-      }
+      {isOpen && <ExpenseUpdateModal setIsOpen={setIsOpen} expenseId={id} />}
+      {isDeleteOpen && (
+        <DeleteConfirmationModal
+          isOpen={isDeleteOpen}
+          setIsOpen={setIsDeleteOpen}
+          itemType="expense"
+          name={itemName}
+          id={id}
+        />
+      )}
     </div>
   );
 }
