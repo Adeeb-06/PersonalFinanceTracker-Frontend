@@ -9,6 +9,7 @@ import UserProvider from "@/providers/UserProvider";
 import ExpenseProvider from "@/providers/ExpenseProvider";
 import BudgetProvider from "@/providers/BudgetProvider";
 import CategoryProvider from "@/providers/CategoryProvider";
+import DashboardProvider from "@/providers/DashboardProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,8 +31,10 @@ export default function RootLayout({
                 <BudgetProvider>
                   <BalanceProvider>
                     <CategoryProvider>
+                      <DashboardProvider>
                     <ToastContainer />
                     {children}
+                      </DashboardProvider>
                     </CategoryProvider>
                   </BalanceProvider>
                 </BudgetProvider>
