@@ -10,14 +10,18 @@ import {
   Cross,
   XIcon,
   Edit2,
+  ArrowDownLeft,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
-import { BalanceTableSkeleton } from "./Skeletons/BalanceTableSkeleton";
-import { NoTransactions } from "./Skeletons/NoTransaction";
+import { BalanceTableSkeleton } from "../Skeletons/BalanceTableSkeleton";
 import balanceContext from "@/app/context/BalanceContext";
+import expenseContext from "@/app/context/ExpenseContext";
+import { NoTransactions } from "../Skeletons/NoTransaction";
+import ExpenseUpdateModal from "./ExpenseUpdateModal";
+import DeleteConfirmationModal from "../Modals/ConfirmDelete";
 
 interface Pagination {
   currentPage: string | number;
@@ -26,7 +30,7 @@ interface Pagination {
 }
 
 interface Transaction {
-  _id: string | number;
+  _id: string;
   date: string;
   time: string;
   amount: number;
@@ -34,45 +38,36 @@ interface Transaction {
   description: string;
 }
 
-export default function IncomeTable() {
-  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+export default function ExpenseTable() {
   const { data: session, status } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [id, setId] = useState<string>("");
+  const [itemName, setItemName] = useState<string>("");
 
+  const {
+    expenseData,
+    refetchExpenseData,
+    isExpenseLoading,
+    page,
+    setPage,
+    setExpenseId,
+    expenseDataById,
+  } = useContext(expenseContext)!;
 
-const {balanceData , setStartDate , setEndDate ,refetchBalanceData, isBalanceLoading , page , startDate , endDate , setPage } = useContext(balanceContext)!
+  console.log(expenseData);
 
+  const pagination = expenseData?.pagination || null;
 
-
-
-  const pagination = balanceData?.pagination || null;
-
-  console.log(balanceData);
-
-
-  const transactions = balanceData?.data ?? [];
+  console.log(expenseData);
 
   const showSkeleton =
-    isBalanceLoading ||
+    isExpenseLoading ||
     status === "loading" ||
-    (status === "authenticated" && !balanceData);
+    (status === "authenticated" && !expenseData);
 
   const handleDateFilter = () => {
-    refetchBalanceData();
-  };
-
-  const handleView = (id: number) => {
-    console.log("View transaction:", id);
-    setOpenDropdown(null);
-  };
-
-  const handleEdit = (id: number) => {
-    console.log("Edit transaction:", id);
-    setOpenDropdown(null);
-  };
-
-  const handleDelete = (id: number) => {
-    console.log("Delete transaction:", id);
-    setOpenDropdown(null);
+    refetchExpenseData();
   };
 
   const formatDate = (dateString: string) => {
@@ -84,17 +79,21 @@ const {balanceData , setStartDate , setEndDate ,refetchBalanceData, isBalanceLoa
     });
   };
 
+  const transactions = expenseData?.data ?? [];
+
   return (
     <div className="w-full mt-5 bg-secondary  border border-gray-800 rounded-2xl overflow-hidden">
       {/* Table Header */}
       <div className="px-6 flex justify-between gap-2 py-4 border-b border-gray-800">
         <div>
-          <h2 className="text-xl font-bold text-white">Recent Income Transactions</h2>
+          <h2 className="text-xl font-bold text-white">
+            Recent Income Transactions
+          </h2>
           <p className="text-sm text-gray-400 mt-1">
             View and manage your transactions
           </p>
         </div>
-        <div className="flex gap-3 items-center">
+        {/* <div className="flex gap-3 items-center">
           <input
             onChange={(e) => setStartDate(e.target.value)}
             type="date"
@@ -112,7 +111,7 @@ const {balanceData , setStartDate , setEndDate ,refetchBalanceData, isBalanceLoa
             className="btn btn-primary text-secondary"
             onClick={handleDateFilter}
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Table Container with Scroll */}
@@ -170,10 +169,10 @@ const {balanceData , setStartDate , setEndDate ,refetchBalanceData, isBalanceLoa
                   {/* Amount */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      <ArrowDownRight className="w-4 h-4 text-green-400" />
+                      <ArrowDownLeft className="w-4 h-4 text-red-400" />
 
-                      <span className={`text-sm font-bold text-green-400 `}>
-                        +$
+                      <span className={`text-sm font-bold text-red-400 `}>
+                        -$
                         {transaction.amount.toFixed(2)}
                       </span>
                     </div>
@@ -194,10 +193,23 @@ const {balanceData , setStartDate , setEndDate ,refetchBalanceData, isBalanceLoa
                   {/* Actions */}
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="relative flex justify-center gap-5">
-                      <button className="btn btn-sm btn-error">
+                      <button
+                        onClick={() => {
+                          setIsDeleteOpen(true);
+                          setId(transaction._id);
+                          setItemName(transaction.category);
+                        }}
+                        className="btn btn-sm btn-error"
+                      >
                         <XIcon size={15} />
                       </button>
-                      <button className="btn btn-sm btn-success">
+                      <button
+                        onClick={() => {
+                          setIsOpen(true);
+                          setId(transaction._id);
+                        }}
+                        className="btn btn-sm btn-success"
+                      >
                         <Edit2 size={15} />
                       </button>
                     </div>
@@ -213,7 +225,7 @@ const {balanceData , setStartDate , setEndDate ,refetchBalanceData, isBalanceLoa
         <p className="text-sm text-gray-400">
           Showing{" "}
           <span className="font-semibold text-white">
-            {balanceData?.data.length}
+            {expenseData?.data.length}
           </span>{" "}
           transactions
         </p>
@@ -250,6 +262,16 @@ const {balanceData , setStartDate , setEndDate ,refetchBalanceData, isBalanceLoa
           </button>
         </div>
       </div>
+      {isOpen && <ExpenseUpdateModal setIsOpen={setIsOpen} expenseId={id} />}
+      {isDeleteOpen && (
+        <DeleteConfirmationModal
+          isOpen={isDeleteOpen}
+          setIsOpen={setIsDeleteOpen}
+          itemType="expense"
+          name={itemName}
+          id={id}
+        />
+      )}
     </div>
   );
 }

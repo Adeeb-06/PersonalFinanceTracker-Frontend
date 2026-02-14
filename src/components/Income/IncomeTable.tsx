@@ -10,18 +10,15 @@ import {
   Cross,
   XIcon,
   Edit2,
-  ArrowDownLeft,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
-import { BalanceTableSkeleton } from "./Skeletons/BalanceTableSkeleton";
+import { BalanceTableSkeleton } from "../Skeletons/BalanceTableSkeleton";
+import { NoTransactions } from "../Skeletons/NoTransaction";
 import balanceContext from "@/app/context/BalanceContext";
-import expenseContext from "@/app/context/ExpenseContext";
-import { NoTransactions } from "./Skeletons/NoTransaction";
-import ExpenseUpdateModal from "./ExpenseUpdateModal";
-import DeleteConfirmationModal from "./Modals/ConfirmDelete";
+import DeleteConfirmationModal from "../Modals/ConfirmDelete";
 
 interface Pagination {
   currentPage: string | number;
@@ -38,36 +35,53 @@ interface Transaction {
   description: string;
 }
 
-export default function ExpenseTable() {
-  const { data: session, status } = useSession();
+export default function IncomeTable() {
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [name, setName] = useState("");
   const [id, setId] = useState<string>("");
-  const [itemName, setItemName] = useState<string>("");
+  const { data: session, status } = useSession();
 
   const {
-    expenseData,
-    refetchExpenseData,
-    isExpenseLoading,
+    balanceData,
+    setStartDate,
+    setEndDate,
+    refetchBalanceData,
+    isBalanceLoading,
     page,
+    startDate,
+    endDate,
     setPage,
-    setExpenseId,
-    expenseDataById,
-  } = useContext(expenseContext)!;
+  } = useContext(balanceContext)!;
 
-  console.log(expenseData);
+  const pagination = balanceData?.pagination || null;
 
-  const pagination = expenseData?.pagination || null;
+  console.log(balanceData);
 
-  console.log(expenseData);
+  const transactions = balanceData?.data ?? [];
 
   const showSkeleton =
-    isExpenseLoading ||
+    isBalanceLoading ||
     status === "loading" ||
-    (status === "authenticated" && !expenseData);
+    (status === "authenticated" && !balanceData);
 
   const handleDateFilter = () => {
-    refetchExpenseData();
+    refetchBalanceData();
+  };
+
+  const handleView = (id: number) => {
+    console.log("View transaction:", id);
+    setOpenDropdown(null);
+  };
+
+  const handleEdit = (id: number) => {
+    console.log("Edit transaction:", id);
+    setOpenDropdown(null);
+  };
+
+  const handleDelete = (id: number) => {
+    console.log("Delete transaction:", id);
+    setOpenDropdown(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -78,8 +92,6 @@ export default function ExpenseTable() {
       year: "numeric",
     });
   };
-
-  const transactions = expenseData?.data ?? [];
 
   return (
     <div className="w-full mt-5 bg-secondary  border border-gray-800 rounded-2xl overflow-hidden">
@@ -93,7 +105,7 @@ export default function ExpenseTable() {
             View and manage your transactions
           </p>
         </div>
-        {/* <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center">
           <input
             onChange={(e) => setStartDate(e.target.value)}
             type="date"
@@ -111,7 +123,7 @@ export default function ExpenseTable() {
             className="btn btn-primary text-secondary"
             onClick={handleDateFilter}
           />
-        </div> */}
+        </div>
       </div>
 
       {/* Table Container with Scroll */}
@@ -169,10 +181,10 @@ export default function ExpenseTable() {
                   {/* Amount */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      <ArrowDownLeft className="w-4 h-4 text-red-400" />
+                      <ArrowDownRight className="w-4 h-4 text-green-400" />
 
-                      <span className={`text-sm font-bold text-red-400 `}>
-                        -$
+                      <span className={`text-sm font-bold text-green-400 `}>
+                        +$
                         {transaction.amount.toFixed(2)}
                       </span>
                     </div>
@@ -195,21 +207,15 @@ export default function ExpenseTable() {
                     <div className="relative flex justify-center gap-5">
                       <button
                         onClick={() => {
-                          setIsDeleteOpen(true);
+                          setIsOpen(true);
+                          setName(transaction.category);
                           setId(transaction._id);
-                          setItemName(transaction.category);
                         }}
                         className="btn btn-sm btn-error"
                       >
                         <XIcon size={15} />
                       </button>
-                      <button
-                        onClick={() => {
-                          setIsOpen(true);
-                          setId(transaction._id);
-                        }}
-                        className="btn btn-sm btn-success"
-                      >
+                      <button className="btn btn-sm btn-success">
                         <Edit2 size={15} />
                       </button>
                     </div>
@@ -225,7 +231,7 @@ export default function ExpenseTable() {
         <p className="text-sm text-gray-400">
           Showing{" "}
           <span className="font-semibold text-white">
-            {expenseData?.data.length}
+            {balanceData?.data.length}
           </span>{" "}
           transactions
         </p>
@@ -262,14 +268,13 @@ export default function ExpenseTable() {
           </button>
         </div>
       </div>
-      {isOpen && <ExpenseUpdateModal setIsOpen={setIsOpen} expenseId={id} />}
-      {isDeleteOpen && (
+      {isOpen && (
         <DeleteConfirmationModal
-          isOpen={isDeleteOpen}
-          setIsOpen={setIsDeleteOpen}
-          itemType="expense"
-          name={itemName}
+          setIsOpen={setIsOpen}
+          name={name}
           id={id}
+          isOpen={isOpen}
+          itemType="income"
         />
       )}
     </div>

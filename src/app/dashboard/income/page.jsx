@@ -1,6 +1,6 @@
 import React from 'react'
-import BalanceCard from '@/components/BalanceCard'
-import IncomeTable from '@/components/IncomeTable'
+import BalanceCard from '@/components/Income/BalanceCard'
+import IncomeTable from '@/components/Income/IncomeTable'
 
 
 const IncomePage = () => {

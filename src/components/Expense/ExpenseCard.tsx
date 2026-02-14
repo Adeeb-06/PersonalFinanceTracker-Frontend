@@ -52,11 +52,9 @@ export default function ExpenseCard() {
     setSelectedDate(new Date(year, month - 1, 1));
   };
 
-
   // console.log(totalExpenseByMonthData)
 
   // console.log(currentMonth , currentYear)
-
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -147,7 +145,7 @@ export default function ExpenseCard() {
               {formatDate(selectedDate)}
             </span>
             <ChevronDown className="w-3 h-3 text-gray-600 group-hover:text-primary transition-colors duration-300 transform group-hover:rotate-180" />
-            
+
             {/* Hidden Date Input */}
             <input
               type="month"
@@ -201,16 +199,14 @@ export default function ExpenseCard() {
               </span>
             </div>
           )}
-          {
-            !budgetByMonthData && (
-               <div className="flex items-center gap-2 px-3 py-2 bg-red-500 bg-opacity-10 rounded-lg border border-red-500 border-opacity-30">
+          {!budgetByMonthData && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-red-500 bg-opacity-10 rounded-lg border border-red-500 border-opacity-30">
               <AlertCircle className="w-4 h-4 text-red-400" />
               <span className="text-xs font-semibold text-primary">
                 No Budget Set for This Month
               </span>
             </div>
-            )
-          }
+          )}
         </div>
 
         {/* Right Side - Actions & Info */}

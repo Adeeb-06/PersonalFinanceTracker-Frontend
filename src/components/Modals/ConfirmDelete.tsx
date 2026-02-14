@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import expenseContext from "@/app/context/ExpenseContext";
 import budgetContext from "@/app/context/BudgetContext";
 import UserContext from "@/app/context/UserContext";
+import balanceContext from "@/app/context/BalanceContext";
 
 export default function DeleteConfirmationModal({
   isOpen,
@@ -22,9 +23,12 @@ export default function DeleteConfirmationModal({
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { refetchExpenseData , refetchTotalExpenseByMonthData} = useContext(expenseContext)!
-  const {refetchBudgetByMonthData , refetchBudgetData} = useContext(budgetContext)!
-  const {refetchUser} = useContext(UserContext)!
+  const { refetchExpenseData, refetchTotalExpenseByMonthData } =
+    useContext(expenseContext)!;
+  const { refetchBudgetByMonthData, refetchBudgetData } =
+    useContext(budgetContext)!;
+    const {refetchBalanceData} = useContext(balanceContext)!
+  const { refetchUser } = useContext(UserContext)!;
 
   // Item details - pass these as props in real implementat
 
@@ -32,44 +36,45 @@ export default function DeleteConfirmationModal({
     setIsOpen(false);
   };
 
-
-  const deleteTransaction = async (id : string , type : string) =>{
-    if(type === "expense"){
-      const res = await axios.delete(`http://localhost:9000/api/expense/delete-expense/${id}`, {
-        withCredentials: true
-      })
-      if(res.status === 200){
-      toast.success("Transaction deleted successfully")
-      setIsOpen(false)
-      refetchExpenseData()
-      refetchTotalExpenseByMonthData()
-      refetchBudgetByMonthData()
-      refetchBudgetData()
-      refetchUser()
+  const deleteTransaction = async (id: string, type: string) => {
+    if (type === "expense") {
+      const res = await axios.delete(
+        `http://localhost:9000/api/expense/delete-expense/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+      if (res.status === 200) {
+        toast.success("Transaction deleted successfully");
+        setIsOpen(false);
+        refetchExpenseData();
+        refetchTotalExpenseByMonthData();
+        refetchBudgetByMonthData();
+        refetchBudgetData();
+        refetchUser();
+      } else {
+        toast.error("Failed to delete transaction");
+      }
+    } else {
+      const res = await axios.delete(
+        `http://localhost:9000/api/balance/delete-income/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+      if (res.status === 200) {
+        toast.success("Transaction deleted successfully");
+        setIsOpen(false);
+        refetchExpenseData();
+        refetchBalanceData();
+        refetchBudgetByMonthData();
+        refetchBudgetData();
+        refetchUser();
+      } else {
+        toast.error("Failed to delete transaction");
+      }
     }
-    else{
-      toast.error("Failed to delete transaction")
-    }
-    }
-    else{
-      const res = await axios.delete(`http://localhost:3000/api/income/${id}`,{
-        withCredentials: true
-      })
-      if(res.status === 200){
-      toast.success("Transaction deleted successfully")
-      setIsOpen(false)
-      refetchExpenseData()
-      refetchBudgetByMonthData()
-      refetchBudgetData()
-      refetchUser()
-    }
-    else{
-      toast.error("Failed to delete transaction")
-    }
-    }
-
-    
-  }
+  };
 
   return (
     <>
@@ -149,7 +154,7 @@ export default function DeleteConfirmationModal({
               Cancel
             </button>
             <button
-              onClick={() => deleteTransaction(id , itemType)}
+              onClick={() => deleteTransaction(id, itemType)}
               disabled={isDeleting}
               className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >

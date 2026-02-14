@@ -2,7 +2,7 @@ import { QueryObserverResult } from "@tanstack/react-query";
 import React,{ createContext , ReactNode, Dispatch, SetStateAction} from "react";
 
 interface BalanceItem {
-   _id: string | number;
+   _id: string ;
   date: string;
   time: string;
   amount: number;
