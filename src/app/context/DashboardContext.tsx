@@ -10,6 +10,10 @@ interface DashboardReport {
         category: string;
         amount: number;
     };
+    surplusPercentage: number;
+    budgetStatus: {
+        status: boolean;
+    };
 }
 
 interface DashboardContextType {

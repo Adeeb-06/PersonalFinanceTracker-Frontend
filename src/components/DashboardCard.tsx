@@ -40,7 +40,7 @@ export default function DashboardOverviewCard() {
     setYear,
   } = useContext(DashboardContext)!;
 
-  console.log(dashboardReport);
+  console.log(dashboardReport, "report");
   const showSkeleton =
     dashboardLoading ||
     status === "loading" ||
@@ -88,6 +88,8 @@ export default function DashboardOverviewCard() {
   ).toFixed(1);
   const isExpenseUp = expenseChange > 0;
 
+  const isDeficit = dashboardReport?.surplusPercentage < 0;
+
   return (
     <div className="w-full bg-secondary border border-gray-800 rounded-2xl overflow-hidden shadow-2xl">
       {/* Header */}
@@ -131,7 +133,7 @@ export default function DashboardOverviewCard() {
                   <Wallet className="w-5 h-5 text-primary" />
                 </div>
                 <span className="text-secondary text-sm font-semibold opacity-90">
-                  Total Balance
+                  Total Balance - Current
                 </span>
               </div>
             </div>
@@ -263,23 +265,23 @@ export default function DashboardOverviewCard() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Income vs Expense</span>
-                <span className="text-sm font-bold text-green-400">
-                  {((monthData.income / monthData.expense) * 100 - 100).toFixed(
-                    0,
-                  )}
-                  % surplus
+                <span className={`text-sm font-bold ${isDeficit ? "text-red-400" : "text-green-400"}`}>
+                 {
+                  isDeficit ? "Deficit " : "Surplus "
+                 }
+                 {dashboardReport?.surplusPercentage?.toFixed(0)}%
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Avg. Daily Spend</span>
                 <span className="text-sm font-bold text-white">
-                  ${(monthData.expense / 28).toFixed(2)}
+                  ${(dashboardReport?.totalExpense / 28).toFixed(2)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Budget Status</span>
-                <span className="text-sm font-bold text-green-400">
-                  On Track
+                <span className={`text-sm font-bold ${dashboardReport?.budgetStatus?.status ? "text-green-400" : "text-red-400"}`}>
+                  {dashboardReport?.budgetStatus?.status  ? "On Track" : "Off Track"}
                 </span>
               </div>
             </div>
