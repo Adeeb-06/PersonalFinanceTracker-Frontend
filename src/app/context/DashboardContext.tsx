@@ -14,6 +14,11 @@ interface DashboardReport {
     budgetStatus: {
         status: boolean;
     };
+    incomeExpenseChart: {
+        month: string;
+        income: number;
+        expense: number;
+    }[];
 }
 
 interface DashboardContextType {

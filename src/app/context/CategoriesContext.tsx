@@ -18,15 +18,11 @@ export interface CategoriesContextType {
   incomeCategoriesError: unknown;
   expenseCategoriesError: unknown;
   category: string;
-  month: number;
-  year: number;
   categoryAnalytics: any;
   categoryAnalyticsLoading: boolean;
   refetchCategoryAnalytics: () => void;
   categoryAnalyticsError: unknown;
   setCategory: (category: string) => void;
-  setMonth: (month: number) => void;
-  setYear: (year: number) => void;
   expenseCategory: string;
   setExpenseCategory: (category: string) => void;
   incomeCategory: string;
@@ -39,6 +35,14 @@ export interface CategoriesContextType {
   incomeCategoryAnalyticsLoading: boolean;
   refetchIncomeCategoryAnalytics: () => void;
   incomeCategoryAnalyticsError: unknown;
+  expenseMonth: number;
+  expenseYear: number;
+  setExpenseMonth: (month: number) => void;
+  setExpenseYear: (year: number) => void;
+  incomeMonth: number;
+  incomeYear: number;
+  setIncomeMonth: (month: number) => void;
+  setIncomeYear: (year: number) => void;
 }
 
 const CategoriesContext = createContext<CategoriesContextType | null>(null);

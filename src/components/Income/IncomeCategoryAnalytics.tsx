@@ -31,8 +31,8 @@ export default function IncomeCategoryAnalytics() {
     refetchIncomeCategoryAnalytics,
     incomeCategoryAnalyticsError,
     setIncomeCategory,
-    setMonth,
-    setYear,
+    setIncomeMonth,
+    setIncomeYear,
     incomeCategories,
   } = useContext(CategoriesContext)!;
 
@@ -57,9 +57,9 @@ export default function IncomeCategoryAnalytics() {
   useEffect(() => {
     const m = selectedDate.getMonth() + 1; // 1-based month
     const y = selectedDate.getFullYear();
-    setMonth(m);
-    setYear(y);
-  }, [selectedDate, setMonth, setYear]);
+    setIncomeMonth(m);
+    setIncomeYear(y);
+  }, [selectedDate, setIncomeMonth, setIncomeYear]);
 
   const currentCategory = categoriesToDisplay?.find(
     (cat) => cat.name === selectedCategory,

@@ -11,11 +11,13 @@ interface CategoryProviderProps {
 
 const CategoryProvider = ({ children }: CategoryProviderProps) => {
   const { data: session } = useSession();
-  const [month, setMonth] = useState<number>();
-  const [year, setYear] = useState<number>();
+  const [expenseMonth, setExpenseMonth] = useState<number>();
+  const [expenseYear, setExpenseYear] = useState<number>();
+  const [incomeMonth, setIncomeMonth] = useState<number>();
+  const [incomeYear, setIncomeYear] = useState<number>();
   const [category, setCategory] = useState<string>();
-  const [expenseCategory , setExpenseCategory] = useState<string>();
-  const [incomeCategory , setIncomeCategory] = useState<string>();
+  const [expenseCategory, setExpenseCategory] = useState<string>();
+  const [incomeCategory, setIncomeCategory] = useState<string>();
 
   const fetchIncomeCategories = async () => {
     if (!session?.user?.email) return [];
@@ -61,12 +63,12 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
   ) => {
     if (!session?.user?.email) return [];
     const res = await axios.get(
-      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${expenseCategory}&month=${month}&year=${year}`,
+      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${expenseCategory}&month=${expenseMonth}&year=${expenseYear}`,
       {
         withCredentials: true,
       },
     );
-    console.log(res)
+    console.log(res);
     return res.data;
   };
 
@@ -77,7 +79,7 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
   ) => {
     if (!session?.user?.email) return [];
     const res = await axios.get(
-      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${incomeCategory}&month=${month}&year=${year}`,
+      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${incomeCategory}&month=${incomeMonth}&year=${incomeYear}`,
       {
         withCredentials: true,
       },
@@ -107,22 +109,6 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     enabled: !!session?.user?.email,
   });
 
-  const {
-    data: categoryAnalytics,
-    isLoading: categoryAnalyticsLoading,
-    refetch: refetchCategoryAnalytics,
-    error: categoryAnalyticsError,
-  } = useQuery({
-    queryKey: [
-      "categoryAnalytics",
-      session?.user?.email,
-      month,
-      year,
-      category,
-    ],
-    queryFn: () => fetchCategoryAnalytics(category!, month!, year!),
-    enabled: !!session?.user?.email && !!month && !!year && !!category,
-  });
 
 
   const {
@@ -134,12 +120,13 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     queryKey: [
       "expenseCategoryAnalytics",
       session?.user?.email,
-      month,
-      year,
+      expenseMonth, 
+      expenseYear,
       expenseCategory,
     ],
-    queryFn: () => fetchExpenseCategoryAnalytics(expenseCategory!, month!, year!),
-    enabled: !!session?.user?.email && !!month && !!year && !!expenseCategory,
+    queryFn: () =>
+      fetchExpenseCategoryAnalytics(expenseCategory!, expenseMonth!, expenseYear!),
+    enabled: !!session?.user?.email && !!expenseMonth && !!expenseYear && !!expenseCategory,
   });
 
   const {
@@ -151,25 +138,25 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     queryKey: [
       "incomeCategoryAnalytics",
       session?.user?.email,
-      month,
-      year,
+      incomeMonth,
+      incomeYear,
       incomeCategory,
     ],
-    queryFn: () => fetchIncomeCategoryAnalytics(incomeCategory!, month!, year!),
-    enabled: !!session?.user?.email && !!month && !!year && !!incomeCategory,
+    queryFn: () => fetchIncomeCategoryAnalytics(incomeCategory!, incomeMonth!, incomeYear!),
+    enabled: !!session?.user?.email && !!incomeMonth && !!incomeYear && !!incomeCategory,
   });
 
   const data = {
     setCategory,
-    setMonth,
-    setYear,
     category,
-    month,
-    year,
-    categoryAnalytics,
-    categoryAnalyticsLoading,
-    refetchCategoryAnalytics,
-    categoryAnalyticsError,
+    setExpenseMonth,
+    setExpenseYear,
+    setIncomeMonth,
+    setIncomeYear,
+    expenseMonth,
+    expenseYear,
+    incomeMonth,
+    incomeYear,
     incomeCategories,
     expenseCategories,
     refetchExpenseCategories,

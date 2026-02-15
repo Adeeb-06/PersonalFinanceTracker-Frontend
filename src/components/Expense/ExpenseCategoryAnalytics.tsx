@@ -27,8 +27,8 @@ export default function ExpenseCategoryAnalytics() {
 
   const {
     setExpenseCategory,
-    setMonth,
-    setYear,
+    setExpenseMonth,
+    setExpenseYear,
     expenseCategories,
     expenseCategoryAnalytics,
     expenseCategoryAnalyticsLoading,
@@ -57,9 +57,9 @@ export default function ExpenseCategoryAnalytics() {
   useEffect(() => {
     const m = selectedDate.getMonth() + 1; // 1-based month
     const y = selectedDate.getFullYear();
-    setMonth(m);
-    setYear(y);
-  }, [selectedDate, setMonth, setYear]);
+    setExpenseMonth(m);
+    setExpenseYear(y);
+  }, [selectedDate, setExpenseMonth, setExpenseYear]);
 
   const currentCategory = categoriesToDisplay?.find(
     (cat) => cat.name === selectedCategory,

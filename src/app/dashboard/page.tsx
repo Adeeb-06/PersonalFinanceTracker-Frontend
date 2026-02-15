@@ -6,6 +6,8 @@ import ExpenseCategoryAnalytics from "@/components/Expense/ExpenseCategoryAnalyt
 import IncomeTable from "@/components/Income/IncomeTable";
 import ExpenseTable from "@/components/Expense/ExpenseTable";
 import DashboardOverviewCard from "@/components/DashboardCard";
+import WelcomeCard from "@/components/WelcomeCard";
+import IncomeExpenseChart from "@/components/IncomeExpenseChart";
 
 const DashboardPage = () => {
   return (
@@ -13,6 +15,7 @@ const DashboardPage = () => {
   
 
       {/* Summary Cards */}
+      <WelcomeCard/>
       <div className="">
        <DashboardOverviewCard/>
       </div>
@@ -34,13 +37,8 @@ const DashboardPage = () => {
       </div>
 
       {/* Transactions */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
-        <div className="flex flex-col">
-          <IncomeTable />
-        </div>
-        <div className="flex flex-col">
-          <ExpenseTable />
-        </div>
+      <div className="">
+       <IncomeExpenseChart/>
       </div>
     </div>
   );
