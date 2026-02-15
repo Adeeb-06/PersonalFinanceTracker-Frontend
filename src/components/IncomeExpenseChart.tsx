@@ -9,7 +9,7 @@ export default function IncomeExpenseChart() {
   const data =  dashboardReport?.incomeExpenseChart
 
   return (
-    <div className="w-full bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl">
+    <div className="w-full bg-secondary border border-gray-800 rounded-2xl p-6 shadow-xl">
       {/* Card Header */}
       <div className="mb-6">
         <h3 className="text-xl font-bold text-white mb-1">Income vs Expense</h3>

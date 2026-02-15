@@ -15,6 +15,7 @@ import {
   Wallet2,
   User,
   Receipt,
+  PiggyBank,
 } from "lucide-react";
 import Link from "next/link";
 import Logo from "./Logo";
@@ -36,6 +37,11 @@ export default function Sidebar() {
       icon: BarChart3,
       label: "Analytics",
       href: "/dashboard/category-analytics",
+    },
+    {
+      icon: PiggyBank,
+      label: "Savings",
+      href: "/dashboard/savings",
     },
     { icon: Settings, label: "Settings", href: "/dashboard/settings" },
   ];
