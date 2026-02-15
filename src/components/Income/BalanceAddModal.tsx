@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
 import UserContext from "@/app/context/UserContext";
 import CategoriesContext from "@/app/context/CategoriesContext";
+import DashboardContext from "@/app/context/DashboardContext";
 
 interface Balance {
   date: string;
@@ -39,6 +40,7 @@ export default function BalanceAddModal({
   const {refetchBalanceData } = useContext(balanceContext)!
   const {expenseCategories , incomeCategories} = useContext(CategoriesContext)!
   const {refetchUser} = useContext(UserContext)!
+  const {refetchDashboardData} = useContext(DashboardContext)!
 
   const {
     register,
@@ -66,6 +68,7 @@ export default function BalanceAddModal({
      if(res.status === 201){
       refetchBalanceData()
       refetchUser()
+      refetchDashboardData()
       toast.success("Transaction added successfully!");
       setIsOpen(false);
      }

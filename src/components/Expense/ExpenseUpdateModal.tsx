@@ -21,6 +21,7 @@ import UserContext from "@/app/context/UserContext";
 import expenseContext from "@/app/context/ExpenseContext";
 import budgetContext from "@/app/context/BudgetContext";
 import CategoriesContext from "@/app/context/CategoriesContext";
+import DashboardContext from "@/app/context/DashboardContext";
 
 interface Balance {
   date: string;
@@ -48,6 +49,7 @@ export default function ExpenseUpdateModal({
   } = useContext(expenseContext)!;
   const { refetchBudgetByMonthData , refetchBudgetData } = useContext(budgetContext)!;
   const { expenseCategories } = useContext(CategoriesContext)!;
+  const { refetchDashboardData } = useContext(DashboardContext)!;
 
 
   useEffect(() => {
@@ -94,6 +96,7 @@ export default function ExpenseUpdateModal({
         refetchTotalExpenseByMonthData();
         refetchBudgetByMonthData();
         refetchBudgetData();
+        refetchDashboardData();
         refetchExpenseData();
         toast.success("Transaction updated successfully!");
         setIsOpen(false);

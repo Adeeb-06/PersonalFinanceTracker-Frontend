@@ -27,7 +27,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
     error: dashboardError,
     refetch: refetchDashboardData,
   } = useQuery({
-    queryKey: ["dashboardReport"],
+    queryKey: ["dashboardReport" , month , year],
     queryFn: () => fetchDashboardData(),
     enabled: !!userData?.email && !!month && !!year,
   });

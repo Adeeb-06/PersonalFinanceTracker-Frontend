@@ -5,6 +5,11 @@ interface DashboardReport {
     balance: number;
     totalIncome: number;
     totalExpense: number;
+    totalTransaction: number;
+    topExpenseCategory: {
+        category: string;
+        amount: number;
+    };
 }
 
 interface DashboardContextType {

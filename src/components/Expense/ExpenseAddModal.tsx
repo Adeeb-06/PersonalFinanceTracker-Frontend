@@ -21,6 +21,7 @@ import UserContext from "@/app/context/UserContext";
 import expenseContext from "@/app/context/ExpenseContext";
 import budgetContext from "@/app/context/BudgetContext";
 import CategoriesContext from "@/app/context/CategoriesContext";
+import DashboardContext from "@/app/context/DashboardContext";
 
 interface Balance {
   date: string;
@@ -42,6 +43,7 @@ export default function ExpenseAddModal({
     useContext(expenseContext)!;
   const { refetchBudgetByMonthData , refetchBudgetData } = useContext(budgetContext)!;
   const { expenseCategories } = useContext(CategoriesContext)!;
+  const { refetchDashboardData } = useContext(DashboardContext)!;
 
   const {
     register,
@@ -71,6 +73,7 @@ export default function ExpenseAddModal({
         refetchBudgetByMonthData();
         refetchBudgetData();
         refetchExpenseData();
+        refetchDashboardData();
         toast.success("Transaction added successfully!");
         setIsOpen(false);
       }

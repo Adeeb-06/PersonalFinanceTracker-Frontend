@@ -18,12 +18,12 @@ import { useSession } from "next-auth/react";
 
 export default function DashboardOverviewCard() {
   const [selectedMonth, setSelectedMonth] = useState(
-    new Date().toISOString().split("T")[0],
+    new Date().toISOString().slice(0, 7),
   );
 
-  const {data:session , status} = useSession()
+  const { data: session, status } = useSession();
 
-  console.log(selectedMonth);
+
 
   const year: number = Number(selectedMonth.split("-")[0]);
   const month: number = Number(selectedMonth.split("-")[1]);
@@ -40,10 +40,11 @@ export default function DashboardOverviewCard() {
     setYear,
   } = useContext(DashboardContext)!;
 
-
-
   console.log(dashboardReport);
-  const showSkeleton = dashboardLoading || status === "loading" || (status === "authenticated"  && !dashboardReport)
+  const showSkeleton =
+    dashboardLoading ||
+    status === "loading" ||
+    (status === "authenticated" && !dashboardReport);
 
   if (showSkeleton) {
     return <DashboardSkeleton />;
@@ -55,7 +56,7 @@ export default function DashboardOverviewCard() {
     setMonth(month);
     setYear(year);
     refetchDashboardData();
-  }
+  };
 
   // Mock data - replace with actual data
   const monthData = {
@@ -158,7 +159,7 @@ export default function DashboardOverviewCard() {
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-5xl font-bold text-secondary">
-                ${dashboardReport?.totalExpense}
+                ${dashboardReport?.totalExpense || 0}
               </span>
               <span className="text-xl font-semibold text-secondary opacity-70">
                 .{(dashboardReport?.totalExpense % 1).toFixed(2).split(".")[1]}
@@ -178,7 +179,7 @@ export default function DashboardOverviewCard() {
               </span>
             </div>
             <p className="text-xl font-bold text-white">
-              ${dashboardReport?.totalIncome}
+              ${dashboardReport?.totalIncome || 0}
             </p>
           </div>
 
@@ -191,7 +192,7 @@ export default function DashboardOverviewCard() {
               </span>
             </div>
             <p className="text-xl font-bold text-white">
-              ${monthData.savings.toFixed(0)}
+              ${dashboardReport?.balance - dashboardReport?.totalExpense}
             </p>
           </div>
 
@@ -217,7 +218,7 @@ export default function DashboardOverviewCard() {
               </span>
             </div>
             <p className="text-xl font-bold text-white">
-              {monthData.transactionCount}
+              {dashboardReport?.totalTransaction}
             </p>
           </div>
         </div>
@@ -231,23 +232,23 @@ export default function DashboardOverviewCard() {
             </h4>
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-white">
-                {monthData.topCategory}
+                {dashboardReport?.topExpenseCategory?.category}
               </span>
               <span className="text-lg font-bold text-red-400">
-                ${monthData.topCategoryAmount}
+                ${dashboardReport?.topExpenseCategory?.amount}
               </span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2 mt-3">
               <div
                 className="bg-gradient-to-r from-red-500 to-rose-600 h-2 rounded-full"
                 style={{
-                  width: `${(monthData.topCategoryAmount / monthData.expense) * 100}%`,
+                  width: `${(dashboardReport?.topExpenseCategory?.amount / dashboardReport?.totalExpense) * 100}%`,
                 }}
               ></div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
               {(
-                (monthData.topCategoryAmount / monthData.expense) *
+                (dashboardReport?.topExpenseCategory?.amount / dashboardReport?.totalExpense) *
                 100
               ).toFixed(1)}
               % of total expenses
