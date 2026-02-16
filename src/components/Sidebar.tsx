@@ -67,22 +67,8 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* Search */}
-      {!isCollapsed && (
-        <div className="px-4 py-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full bg-zinc-800 text-gray-100 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 placeholder-gray-500"
-            />
-          </div>
-        </div>
-      )}
-
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-3 overflow-y-auto">
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           return (
@@ -109,12 +95,10 @@ export default function Sidebar() {
         <div
           className={`flex items-center ${isCollapsed ? "justify-center" : "space-x-3"}`}
         >
-          <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold">
-            {userData?.username?.[0]}
-          </div>
+         
           {!isCollapsed && (
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">
+              <p className="text-xl font-medium text-white">
                 {userData?.username}
               </p>
               <p className="text-xs text-gray-400">{userData?.email}</p>
@@ -124,9 +108,9 @@ export default function Sidebar() {
         <div className="flex items-center mt-3 space-x-3">
           <button
             onClick={() => signOut()}
-            className="btn btn-md btn-primary text-secondary"
+            className="btn btn-sm btn-primary text-secondary"
           >
-            <User className="w-5 h-5" />
+            <User className="w-3 h-3" />
             Logout
           </button>
         </div>

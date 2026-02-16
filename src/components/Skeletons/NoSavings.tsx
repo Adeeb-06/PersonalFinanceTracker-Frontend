@@ -7,8 +7,8 @@ export default function NoSavingsFound() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
+    <div className="min-h-screen w-full bg-secondary flex items-center justify-center p-4">
+      <div className="w-full">
         {/* Main Empty State Card */}
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-12 text-center">
           {/* Animated Icon */}
@@ -38,9 +38,8 @@ export default function NoSavingsFound() {
           {/* Create Goal Button */}
           <button
             onClick={handleCreateGoal}
-            className="inline-flex items-center gap-3 px-8 py-4 bg-primary hover:opacity-90 text-secondary font-bold rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 text-lg"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-primary hover:opacity-90 text-secondary font-bold rounded-xl  shadow-xl hover:shadow-2xl text-lg"
           >
-            <Plus className="w-6 h-6" />
             Create Your First Goal
           </button>
           

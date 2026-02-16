@@ -5,9 +5,14 @@ import React, { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import UserContext from "@/app/context/UserContext";
 import CategoriesContext from "@/app/context/CategoriesContext";
+import BalanceAddModal from "./Income/BalanceAddModal";
+import balanceContext from "@/app/context/BalanceContext";
+import expenseContext from "@/app/context/ExpenseContext";
 
 const AddCategories = () => {
   const { userData } = useContext(UserContext)!;
+  const {refetchBalanceData} = useContext(balanceContext)!
+  const {refetchExpenseData} = useContext(expenseContext)!
   const {
     incomeCategories,
     refetchIncomeCategories,
@@ -36,6 +41,7 @@ const AddCategories = () => {
         console.log(res);
         if (res.status === 201) {
             refetchIncomeCategories()
+            refetchBalanceData()
           toast.success("Income category added");
         }
       } catch (error) {
@@ -57,6 +63,7 @@ const AddCategories = () => {
         );
        if(res.status == 201){
         refetchExpenseCategories()
+        refetchExpenseData()
         toast.success("Expense category added");
        }
       } catch (error) {
@@ -76,6 +83,7 @@ const AddCategories = () => {
       console.log(res);
       if (res.status === 200) {
         if (type === "income") {
+          
           refetchIncomeCategories();
         } else {
           refetchExpenseCategories();
