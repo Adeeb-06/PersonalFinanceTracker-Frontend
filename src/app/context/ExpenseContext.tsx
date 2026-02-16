@@ -1,9 +1,9 @@
-"use client"
+"use client";
 import { QueryObserverResult } from "@tanstack/react-query";
-import React ,{ createContext } from "react";
+import React, { createContext } from "react";
 
 interface ExpenseItem {
-   _id: string;
+  _id: string;
   date: string;
   time: string;
   amount: number;
@@ -14,7 +14,7 @@ interface ExpenseItem {
 interface ExpenseResponse {
   data: ExpenseItem[];
   pagination: {
-    currentPage:number;
+    currentPage: number;
     page: number;
     totalPages: number;
   };
@@ -27,25 +27,34 @@ interface TotalExpenseByMonth {
 }
 
 interface ExpenseContextType {
-   expenseData: ExpenseResponse;
-   refetchExpenseData: () => Promise<QueryObserverResult<ExpenseItem[], Error>>;
-   isExpenseLoading: boolean;
-   setPage: React.Dispatch<React.SetStateAction<number>>;
-   setLimit: React.Dispatch<React.SetStateAction<number>>;
-   page: number;
-   setMonthExpense: React.Dispatch<React.SetStateAction<number | undefined>>;
-   setYear: React.Dispatch<React.SetStateAction<number| undefined>>;
-   totalExpenseByMonthData: TotalExpenseByMonth;
-   refetchTotalExpenseByMonthData: () => Promise<QueryObserverResult<TotalExpenseByMonth[], Error>>;
-   isTotalExpenseByMonthLoading: boolean;
-   expenseDataById: ExpenseItem;
-   refetchExpenseDataById: () => Promise<QueryObserverResult<ExpenseItem[], Error>>;
-   isExpenseDataByIdLoading: boolean;
-   expenseDataByIdError: Error;
-   setExpenseId: React.Dispatch<React.SetStateAction<string | undefined>>;
-   expenseId: string | undefined;
+  expenseData: ExpenseResponse;
+  refetchExpenseData: () => Promise<QueryObserverResult<ExpenseItem[], Error>>;
+  isExpenseLoading: boolean;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setLimit: React.Dispatch<React.SetStateAction<number>>;
+  page: number;
+  setMonthExpense: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setYear: React.Dispatch<React.SetStateAction<number | undefined>>;
+  totalExpenseByMonthData: TotalExpenseByMonth;
+  refetchTotalExpenseByMonthData: () => Promise<
+    QueryObserverResult<TotalExpenseByMonth[], Error>
+  >;
+  isTotalExpenseByMonthLoading: boolean;
+  expenseDataById: ExpenseItem;
+  refetchExpenseDataById: () => Promise<
+    QueryObserverResult<ExpenseItem[], Error>
+  >;
+  isExpenseDataByIdLoading: boolean;
+  expenseDataByIdError: Error | null;
+  setExpenseId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  expenseId: string | undefined;
+  startDate: string;
+  setStartDate: React.Dispatch<React.SetStateAction<string>>;
+  endDate: string;
+  setEndDate: React.Dispatch<React.SetStateAction<string>>;
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
 }
-
 
 const expenseContext = createContext<ExpenseContextType | null>(null);
 

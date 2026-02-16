@@ -1,8 +1,13 @@
 import { QueryObserverResult } from "@tanstack/react-query";
-import React,{ createContext , ReactNode, Dispatch, SetStateAction} from "react";
+import React, {
+  createContext,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 interface BalanceItem {
-   _id: string ;
+  _id: string;
   date: string;
   time: string;
   amount: number;
@@ -13,12 +18,11 @@ interface BalanceItem {
 interface BalanceResponse {
   data: BalanceItem[];
   pagination: {
-    currentPage:number;
+    currentPage: number;
     page: number;
     totalPages: number;
   };
 }
-
 
 interface BalanceContextType {
   balance: number;
@@ -29,16 +33,18 @@ interface BalanceContextType {
   setEndDate: Dispatch<SetStateAction<string>>;
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
+  search: string;
+  setSearch: Dispatch<SetStateAction<string>>;
   balanceData?: BalanceResponse;
   refetchBalanceData: () => Promise<QueryObserverResult<BalanceItem[], Error>>;
   isBalanceLoading: boolean;
   incomeId: string;
   setIncomeId: Dispatch<SetStateAction<string>>;
   incomeDataById?: BalanceItem;
-  refetchIncomeDataById: () => Promise<QueryObserverResult<BalanceItem[], Error>>;
+  refetchIncomeDataById: () => Promise<
+    QueryObserverResult<BalanceItem[], Error>
+  >;
   isIncomeDataByIdLoading: boolean;
-
-
 }
 
 // Context initialized as null; real value comes from Provider

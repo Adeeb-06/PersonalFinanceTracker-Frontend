@@ -53,6 +53,10 @@ export default function ExpenseTable() {
     setPage,
     setExpenseId,
     expenseDataById,
+    search,
+    setSearch,
+    setStartDate,
+    setEndDate,
   } = useContext(expenseContext)!;
 
   console.log(expenseData);
@@ -87,13 +91,38 @@ export default function ExpenseTable() {
       <div className="px-6 flex justify-between gap-2 py-4 border-b border-gray-800">
         <div>
           <h2 className="text-xl font-bold text-white">
-            Recent Income Transactions
+            Recent Expense Transactions
           </h2>
           <p className="text-sm text-gray-400 mt-1">
             View and manage your transactions
           </p>
         </div>
-        {/* <div className="flex gap-3 items-center">
+        <div className="flex w-2/3 gap-3 items-center">
+          <label className="input">
+            <svg
+              className="h-[1em] opacity-50"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <g
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                strokeWidth="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </g>
+            </svg>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              type="search"
+              required
+              placeholder="Search Category or Description"
+            />
+          </label>
           <input
             onChange={(e) => setStartDate(e.target.value)}
             type="date"
@@ -105,13 +134,7 @@ export default function ExpenseTable() {
             type="date"
             className="input"
           />
-          <input
-            type="button"
-            value="Search"
-            className="btn btn-primary text-secondary"
-            onClick={handleDateFilter}
-          />
-        </div> */}
+        </div>
       </div>
 
       {/* Table Container with Scroll */}

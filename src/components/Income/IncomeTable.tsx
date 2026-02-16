@@ -39,10 +39,12 @@ interface Transaction {
 export default function IncomeTable() {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [isUpdateOpen , setIsUpdateOpen] = useState(false);
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [name, setName] = useState("");
   const [id, setId] = useState<string>("");
   const { data: session, status } = useSession();
+
+
 
   const {
     balanceData,
@@ -54,7 +56,10 @@ export default function IncomeTable() {
     startDate,
     endDate,
     setPage,
+    search,
+    setSearch,
   } = useContext(balanceContext)!;
+
 
   const pagination = balanceData?.pagination || null;
 
@@ -69,21 +74,6 @@ export default function IncomeTable() {
 
   const handleDateFilter = () => {
     refetchBalanceData();
-  };
-
-  const handleView = (id: number) => {
-    console.log("View transaction:", id);
-    setOpenDropdown(null);
-  };
-
-  const handleEdit = (id: number) => {
-    console.log("Edit transaction:", id);
-    setOpenDropdown(null);
-  };
-
-  const handleDelete = (id: number) => {
-    console.log("Delete transaction:", id);
-    setOpenDropdown(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -107,7 +97,14 @@ export default function IncomeTable() {
             View and manage your transactions
           </p>
         </div>
-        <div className="flex gap-3 items-center">
+        <div className="flex w-2/3 gap-3 items-center">
+          <input
+            type="text"
+            placeholder="Search Category"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="input w-40"
+          />
           <input
             onChange={(e) => setStartDate(e.target.value)}
             type="date"
@@ -118,12 +115,6 @@ export default function IncomeTable() {
             onChange={(e) => setEndDate(e.target.value)}
             type="date"
             className="input"
-          />
-          <input
-            type="button"
-            value="Search"
-            className="btn btn-primary text-secondary"
-            onClick={handleDateFilter}
           />
         </div>
       </div>
@@ -217,10 +208,13 @@ export default function IncomeTable() {
                       >
                         <XIcon size={15} />
                       </button>
-                      <button onClick={()=>{
-                        setIsUpdateOpen(true)
-                        setId(transaction._id)
-                      }} className="btn btn-sm btn-success">
+                      <button
+                        onClick={() => {
+                          setIsUpdateOpen(true);
+                          setId(transaction._id);
+                        }}
+                        className="btn btn-sm btn-success"
+                      >
                         <Edit2 size={15} />
                       </button>
                     </div>
@@ -282,14 +276,9 @@ export default function IncomeTable() {
           itemType="income"
         />
       )}
-      {
-        isUpdateOpen && (
-          <IncomeUpdateModal
-            setIsOpen={setIsUpdateOpen}
-            incomeId={id}
-          />
-        )
-      }
+      {isUpdateOpen && (
+        <IncomeUpdateModal setIsOpen={setIsUpdateOpen} incomeId={id} />
+      )}
     </div>
   );
 }

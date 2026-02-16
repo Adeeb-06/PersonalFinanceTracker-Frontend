@@ -218,13 +218,13 @@ export default function BalanceAddModal({
                       className="block w-full pl-10 pr-3 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
                     >
                       <option value="">Select category</option>
-                     {
-                      incomeCategories.map((category) => (
-                        <option key={category._id} value={category.name}>
-                          {category.name}
-                        </option>
-                      ))
-                     }
+                      {incomeCategories.length ===0 ? <option>Add Category From Settings</option> : (
+                        incomeCategories.map((category) => (
+                          <option key={category._id} value={category.name}>
+                            {category.name}
+                          </option>
+                        ))
+                      )}
                     </select>
                   </div>
                 </div>

@@ -12,17 +12,38 @@ interface Props {
 const ExpenseProvider = ({ children }: Props) => {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
-  const [monthExpense, setMonthExpense] = useState<number>()
-  const [year , setYear] = useState<number>()
-  const [expenseId, setExpenseId] = useState<string>()
+  const [monthExpense, setMonthExpense] = useState<number>();
+  const [year, setYear] = useState<number>();
+  const [expenseId, setExpenseId] = useState<string>();
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [debounceSearch, setDebounceSearch] = useState<string>("");
 
   const { data: session } = useSession();
 
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebounceSearch(search);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [search]);
+
   const fetchExpenseData = async () => {
     try {
+      const params: any = {
+        page,
+        limit,
+        search: debounceSearch,
+      };
+
+      if (startDate) params.from = startDate;
+      if (endDate) params.to = endDate;
+
       const res = await axios.get(
-        `http://localhost:9000/api/expense/get-expense/${session?.user?.email}?page=${page}&limit=${limit}`,
+        `http://localhost:9000/api/expense/get-expense/${session?.user?.email}`,
         {
+          params,
           withCredentials: true,
         },
       );
@@ -30,7 +51,7 @@ const ExpenseProvider = ({ children }: Props) => {
     } catch (error) {
       console.error(error);
       return { data: [] };
-      throw error
+      throw error;
     }
   };
 
@@ -43,12 +64,12 @@ const ExpenseProvider = ({ children }: Props) => {
           withCredentials: true,
         },
       );
-      console.log(res.data)
+      console.log(res.data);
       return res.data;
     } catch (error) {
       console.error(error);
       return { total: 0 };
-      throw error
+      throw error;
     }
   };
 
@@ -58,7 +79,14 @@ const ExpenseProvider = ({ children }: Props) => {
     error: expenseDataError,
     refetch: refetchExpenseData,
   } = useQuery({
-    queryKey: ["expenseData", session?.user?.email, page],
+    queryKey: [
+      "expenseData",
+      session?.user?.email,
+      page,
+      startDate,
+      endDate,
+      debounceSearch,
+    ],
     queryFn: () => fetchExpenseData(),
     enabled: !!session?.user?.email,
   });
@@ -69,7 +97,12 @@ const ExpenseProvider = ({ children }: Props) => {
     error: totalExpenseByMonthDataError,
     refetch: refetchTotalExpenseByMonthData,
   } = useQuery({
-    queryKey: ["totalExpenseByMonthData", session?.user?.email],
+    queryKey: [
+      "totalExpenseByMonthData",
+      session?.user?.email,
+      monthExpense,
+      year,
+    ],
     queryFn: () => fetchTotalExpenseByMonth(),
     enabled: !!session?.user?.email && !!monthExpense && !!year,
   });
@@ -88,18 +121,16 @@ const ExpenseProvider = ({ children }: Props) => {
     }
   };
 
-
   const {
-    data:expenseDataById,
-    isLoading:isExpenseDataByIdLoading,
-    error:expenseDataByIdError,
-    refetch:refetchExpenseDataById,
+    data: expenseDataById,
+    isLoading: isExpenseDataByIdLoading,
+    error: expenseDataByIdError,
+    refetch: refetchExpenseDataById,
   } = useQuery({
     queryKey: ["expenseDataById", session?.user?.email],
     queryFn: () => fetchExpenseById(expenseId!),
     enabled: !!session?.user?.email && !!expenseId,
   });
-  
 
   const data = {
     expenseData,
@@ -119,7 +150,12 @@ const ExpenseProvider = ({ children }: Props) => {
     expenseDataByIdError,
     setExpenseId,
     expenseId,
-    
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    search,
+    setSearch,
   };
   return (
     <expenseContext.Provider value={data}>{children}</expenseContext.Provider>

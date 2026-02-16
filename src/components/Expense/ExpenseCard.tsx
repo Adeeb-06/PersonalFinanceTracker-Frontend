@@ -30,6 +30,7 @@ export default function ExpenseCard() {
     setYear,
     totalExpenseByMonthData,
     refetchExpenseData,
+    refetchTotalExpenseByMonthData,
     isTotalExpenseByMonthLoading,
   } = useContext(expenseContext)!;
 
@@ -43,13 +44,16 @@ export default function ExpenseCard() {
     setMonthExpense(month);
     setYear(year);
 
-    refetchExpenseData();
+    refetchTotalExpenseByMonthData();
     refetchBudgetByMonthData();
   }, [selectedDate]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const [year, month] = e.target.value.split("-").map(Number);
     setSelectedDate(new Date(year, month - 1, 1));
+    refetchExpenseData();
+    refetchTotalExpenseByMonthData();
+    refetchBudgetByMonthData();
   };
 
   // console.log(totalExpenseByMonthData)
