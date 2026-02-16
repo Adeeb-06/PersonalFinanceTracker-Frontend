@@ -2,6 +2,7 @@
 import { Calendar, Plus, MoreVertical, Edit2, Trash2, Check } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import AddMoneyModal from "@/components/Modals/AddMoneyModal";
+import SavingsUpdateModal from "./Modals/SavingsUpdateModal";
 
 const SavingsCard = ({
   goal,
@@ -14,6 +15,7 @@ const SavingsCard = ({
 }) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [isAddMoneyModalOpen, setIsAddMoneyModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   // Close menu when clicking outside
@@ -53,8 +55,7 @@ const SavingsCard = ({
               <div className="absolute right-0 mt-2 w-36 bg-gray-900 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-50">
                 <button
                   onClick={() => {
-                    console.log("Update goal:", goal.id);
-                    setOpenMenu(false);
+                    setIsUpdateModalOpen(true);
                   }}
                   className="flex items-center gap-2 w-full px-4 py-2 text-sm text-white hover:bg-gray-800 transition"
                 >
@@ -151,6 +152,12 @@ const SavingsCard = ({
           goalTitle={goal.title}
           currentAmount={goal.currentAmount}
           targetAmount={goal.targetAmount}
+        />
+      )}
+      {isUpdateModalOpen && (
+        <SavingsUpdateModal
+          id={goal.id || goal._id}
+          setIsUpdateModalOpen={setIsUpdateModalOpen}
         />
       )}
       </>

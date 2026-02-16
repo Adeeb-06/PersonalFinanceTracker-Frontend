@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import savingsContext from "@/app/context/SavingsContext";
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession();
+  const [savingsId, setSavingsId] = useState<string>("");
 
   const fetchSavings = async () => {
     try {
@@ -16,6 +17,22 @@ const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
           withCredentials: true,
         },
       );
+      return res.data;
+    } catch (error: any) {
+      console.log(error);
+      throw new Error(error);
+    }
+  };
+
+  const fetchSavingsByID = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:9000/api/savings/get/${savingsId}/${session?.user?.email}`,
+        {
+          withCredentials: true,
+        },
+      );
+      console.log(res)
       return res.data;
     } catch (error: any) {
       console.log(error);
@@ -34,11 +51,27 @@ const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
     enabled: !!session?.user?.email,
   });
 
+  const {
+    data: savingsDataByID,
+    refetch: refetchSavingsDataByID,
+    isLoading: isSavingsLoadingByID,
+    error: isSavingsErrorByID,
+  } = useQuery({
+    queryKey: ["savingsDataByID", savingsId],
+    queryFn: () => fetchSavingsByID(),
+    enabled: !!savingsId,
+  });
+
   const data = {
     savingsData,
     refetchSavingsData,
     isSavingsLoading,
     isSavingsError,
+    savingsDataByID,
+    refetchSavingsDataByID,
+    isSavingsLoadingByID,
+    isSavingsErrorByID,
+    setSavingsId,
   };
   return (
     <savingsContext.Provider value={data}>{children}</savingsContext.Provider>

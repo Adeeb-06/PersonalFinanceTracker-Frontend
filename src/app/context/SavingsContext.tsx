@@ -9,6 +9,13 @@ interface SavingsContext {
   ) => Promise<QueryObserverResult<any, Error>>;
   isSavingsLoading: boolean;
   isSavingsError: Error|null;
+  savingsDataByID: any;
+  refetchSavingsDataByID: (
+    options?: RefetchOptions,
+  ) => Promise<QueryObserverResult<any, Error>>;
+  isSavingsLoadingByID: boolean;
+  isSavingsErrorByID: Error|null;
+  setSavingsId: (id: string) => void;
 }
 
 const savingsContext = createContext<SavingsContext | null>(null);
