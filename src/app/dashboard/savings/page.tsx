@@ -11,43 +11,25 @@ import {
 import SavingsAddModal from "@/components/Modals/SavingsAddModal";
 import SavingsCard from "@/components/SavingsCard";
 import savingsContext from "@/app/context/SavingsContext";
+import { useSession } from "next-auth/react";
+import SavingsCardSkeleton from "@/components/Skeletons/SavingsCardSkeleton";
+import NoSavingsFound from "@/components/Skeletons/NoSavings";
+
+interface Goal{
+  _id: string;
+  title: string;
+  currentAmount: number;
+  targetAmount: number;
+  deadline: string;
+}
 
 export default function SavingsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {data:session,status} =useSession()
 
   const {savingsData , isSavingsLoading} = useContext(savingsContext)!
 
-  // Mock savings goals data
-  const savingsGoals = [
-    {
-      id: 1,
-      title: "Emergency Fund",
-      currentAmount: 3500,
-      targetAmount: 10000,
-      deadline: "2026-12-31",
-    },
-    {
-      id: 2,
-      title: "New Car",
-      currentAmount: 8200,
-      targetAmount: 25000,
-      deadline: "2027-06-30",
-    },
-    {
-      id: 3,
-      title: "Vacation",
-      currentAmount: 1800,
-      targetAmount: 5000,
-      deadline: "2026-08-15",
-    },
-    {
-      id: 4,
-      title: "Home Down Payment",
-      currentAmount: 15000,
-      targetAmount: 50000,
-      deadline: "2028-01-01",
-    },
-  ];
+  const showSkeleton = isSavingsLoading || status === "loading" || (status ==="authenticated" && !savingsData)
 
   const getProgressPercentage = (current: number, target: number) => {
     return Math.min((current / target) * 100, 100);
@@ -86,7 +68,11 @@ export default function SavingsPage() {
 
         {/* Savings Goals Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {savingsData?.data?.map((goal) => {
+          {showSkeleton && Array.from({ length: 6 }).map((_, i) => (
+            <SavingsCardSkeleton key={i} />
+          ))}
+          {!showSkeleton && savingsData?.data?.length === 0 && <NoSavingsFound />}
+          {!showSkeleton && savingsData?.data?.length > 0 && savingsData?.data?.map((goal: Goal) => {
             const progress = getProgressPercentage(
               goal.currentAmount,
               goal.targetAmount,
@@ -94,6 +80,7 @@ export default function SavingsPage() {
             const daysLeft = getDaysRemaining(goal.deadline);
 
             return (
+              
              <SavingsCard goal={goal} progress={progress} daysLeft={daysLeft} />
             );
           })}

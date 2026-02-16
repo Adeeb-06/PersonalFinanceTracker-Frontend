@@ -40,7 +40,7 @@ export default function Sidebar() {
     },
     {
       icon: PiggyBank,
-      label: "Savings",
+      label: "Active Savings",
       href: "/dashboard/savings",
     },
     { icon: Settings, label: "Settings", href: "/dashboard/settings" },

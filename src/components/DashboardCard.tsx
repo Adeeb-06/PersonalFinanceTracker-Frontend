@@ -190,11 +190,11 @@ export default function DashboardOverviewCard() {
             <div className="flex items-center gap-2 mb-2">
               <Target className="w-4 h-4 text-blue-400" />
               <span className="text-xs text-gray-400 uppercase tracking-wide">
-                Savings
+               Passive Savings
               </span>
             </div>
             <p className="text-xl font-bold text-white">
-              ${dashboardReport?.balance - dashboardReport?.totalExpense}
+              ${dashboardReport?.savings.passiveSavings}
             </p>
           </div>
 
@@ -207,7 +207,7 @@ export default function DashboardOverviewCard() {
               </span>
             </div>
             <p className="text-xl font-bold text-white">
-              {monthData.savingsRate}%
+              {dashboardReport?.savings?.savingsRate}%
             </p>
           </div>
 

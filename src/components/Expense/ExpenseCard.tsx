@@ -182,7 +182,7 @@ export default function ExpenseCard() {
             </div>
             <div className="flex items-center justify-between mt-1">
               <span className="text-xs text-gray-500">
-                ${remaining.toFixed(2)} remaining
+                ${Math.max(remaining, 0).toFixed(2)} remaining
               </span>
               <span className="text-xs text-gray-500">
                 of ${monthlyBudget.toFixed(2)}
@@ -195,7 +195,7 @@ export default function ExpenseCard() {
             <div className="flex items-center gap-2 px-3 py-2 bg-red-500 bg-opacity-10 rounded-lg border border-red-500 border-opacity-30">
               <AlertCircle className="w-4 h-4 text-red-400" />
               <span className="text-xs font-semibold text-primary">
-                Over budget by ${(totalExpense - monthlyBudget).toFixed(2)}
+                Over budget by ${Math.max(totalExpense - monthlyBudget , 0).toFixed(2)}
               </span>
             </div>
           )}

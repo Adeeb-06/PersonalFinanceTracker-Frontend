@@ -1,8 +1,9 @@
 "use client";
+import savingsContext from "@/app/context/SavingsContext";
 import axios from "axios";
 import { Calendar, DollarSign, Target, X } from "lucide-react";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -20,6 +21,7 @@ const SavingsAddModal = ({
 }) => {
 
   const {data:session} = useSession()
+  const {refetchSavingsData} = useContext(savingsContext)!
   const {
     register,
     handleSubmit,
@@ -37,6 +39,7 @@ const SavingsAddModal = ({
       );
       toast.success(res.data.message);
       setIsModalOpen(false);
+      refetchSavingsData()
     } catch (error: any) {
       toast.error(error.response.data.message);
     }

@@ -19,6 +19,10 @@ interface DashboardReport {
         income: number;
         expense: number;
     }[];
+    savings: {
+        passiveSavings: number;
+        savingsRate: number;
+    };
 }
 
 interface DashboardContextType {

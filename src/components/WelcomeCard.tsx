@@ -1,12 +1,14 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Sparkles, TrendingUp, Target, Zap } from "lucide-react";
+import UserContext from "@/app/context/UserContext";
 
 export default function WelcomeCard() {
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  const {userData} = useContext(UserContext)!
   // Mock user data - replace with actual user data from context/props
-  const userName = "John Doe";
+  const userName = userData?.username;
 
   useEffect(() => {
     const timer = setInterval(() => {

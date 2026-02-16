@@ -29,6 +29,8 @@ const ExpenseProvider = ({ children }: Props) => {
       return res.data;
     } catch (error) {
       console.error(error);
+      return { data: [] };
+      throw error
     }
   };
 
@@ -45,6 +47,8 @@ const ExpenseProvider = ({ children }: Props) => {
       return res.data;
     } catch (error) {
       console.error(error);
+      return { total: 0 };
+      throw error
     }
   };
 
@@ -65,9 +69,9 @@ const ExpenseProvider = ({ children }: Props) => {
     error: totalExpenseByMonthDataError,
     refetch: refetchTotalExpenseByMonthData,
   } = useQuery({
-    queryKey: ["totalExpenseByMonthData", session?.user?.email, monthExpense, year],
+    queryKey: ["totalExpenseByMonthData", session?.user?.email],
     queryFn: () => fetchTotalExpenseByMonth(),
-    enabled: !!session?.user?.email,
+    enabled: !!session?.user?.email && !!monthExpense && !!year,
   });
 
   const fetchExpenseById = async (id: string) => {

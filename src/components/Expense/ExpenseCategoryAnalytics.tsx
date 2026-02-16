@@ -166,7 +166,7 @@ export default function ExpenseCategoryAnalytics() {
                       borderRadius: "8px",
                       color: "#fff",
                     }}
-                    formatter={(value: number) => `$${value.toFixed(2)}`}
+                    formatter={(value: number) => `$${value?.toFixed(2) || 0}`}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -212,10 +212,10 @@ export default function ExpenseCategoryAnalytics() {
               </p>
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold text-white">
-                  ${totalAmount.toFixed(0)}
+                  ${totalAmount?.toFixed(0) || 0}
                 </span>
                 <span className="text-xl font-semibold text-gray-500">
-                  .{(totalAmount % 1).toFixed(2).split(".")[1]}
+                  .{(totalAmount % 1).toFixed(2).split(".")[1] || 0}
                 </span>
               </div>
               <p className="text-xs text-gray-400 mt-2">
@@ -233,7 +233,7 @@ export default function ExpenseCategoryAnalytics() {
               </p>
               <div className="flex items-baseline gap-2 mb-3">
                 <span className="text-2xl font-bold text-gray-300">
-                  ${lastMonthAmount.toFixed(2)}
+                  ${lastMonthAmount.toFixed(2) || 0}
                 </span>
               </div>
 
@@ -280,10 +280,9 @@ export default function ExpenseCategoryAnalytics() {
                     Average per Transaction
                   </span>
                   <span className="text-sm font-bold text-white">
-                    $
-                    {(
+                    ${(
                       (data?.totalAmount || 0) / (data?.totalTransactions || 1)
-                    ).toFixed(2)}
+                    ).toFixed(2) || 0}
                   </span>
                 </div>
                 
@@ -292,7 +291,7 @@ export default function ExpenseCategoryAnalytics() {
                     % of Total Expenses
                   </span>
                   <span className="text-sm font-bold text-white">
-                     {data?.percentageOfTotal.toFixed(2)}%
+                    {((data?.percentageOfTotal?? 0 )).toFixed(2) || 0}%
                   </span>
                 </div>
                
