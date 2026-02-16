@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Plus,
   Target,
@@ -10,9 +10,12 @@ import {
 } from "lucide-react";
 import SavingsAddModal from "@/components/Modals/SavingsAddModal";
 import SavingsCard from "@/components/SavingsCard";
+import savingsContext from "@/app/context/SavingsContext";
 
 export default function SavingsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const {savingsData , isSavingsLoading} = useContext(savingsContext)!
 
   // Mock savings goals data
   const savingsGoals = [
@@ -50,6 +53,7 @@ export default function SavingsPage() {
     return Math.min((current / target) * 100, 100);
   };
 
+  console.log(savingsData)
   const getDaysRemaining = (deadline: string) => {
     const today = new Date();
     const deadlineDate = new Date(deadline);
@@ -82,7 +86,7 @@ export default function SavingsPage() {
 
         {/* Savings Goals Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {savingsGoals.map((goal) => {
+          {savingsData?.data?.map((goal) => {
             const progress = getProgressPercentage(
               goal.currentAmount,
               goal.targetAmount,

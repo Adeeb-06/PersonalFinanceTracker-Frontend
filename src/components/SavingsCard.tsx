@@ -1,5 +1,5 @@
 "use client";
-import { Calendar, Plus, MoreVertical, Edit2, Trash2 } from "lucide-react";
+import { Calendar, Plus, MoreVertical, Edit2, Trash2, Check } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import AddMoneyModal from "@/components/Modals/AddMoneyModal";
 
@@ -101,7 +101,7 @@ const SavingsCard = ({
         <div className="mb-5">
           <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
             <div
-              className="bg-primary h-3 rounded-full transition-all duration-500"
+              className={progress === 100 ? "bg-green-500 h-3 rounded-full transition-all duration-500" : "bg-primary h-3 rounded-full transition-all duration-500"}
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -133,10 +133,11 @@ const SavingsCard = ({
 
         <button
           onClick={() => setIsAddMoneyModalOpen(true)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary hover:opacity-90 text-secondary font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+          disabled={progress === 100}
+          className={progress === 100 ? "w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-500 hover:opacity-90 text-secondary font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl" : "w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary hover:opacity-90 text-secondary font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"}
         >
-          <Plus className="w-5 h-5" />
-          <span>Add Money</span>
+          {progress === 100 ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          <span>{progress === 100 ? "Goal Completed" : "Add Money"}</span>
         </button>
       </div>
 
@@ -150,10 +151,6 @@ const SavingsCard = ({
           goalTitle={goal.title}
           currentAmount={goal.currentAmount}
           targetAmount={goal.targetAmount}
-          onSuccess={() => {
-            // Optional: Add logic to refresh data here
-            console.log("Money added successfully");
-          }}
         />
       )}
       </>

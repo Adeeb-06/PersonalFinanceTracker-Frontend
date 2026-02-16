@@ -91,9 +91,9 @@ const ExpenseProvider = ({ children }: Props) => {
     error:expenseDataByIdError,
     refetch:refetchExpenseDataById,
   } = useQuery({
-    queryKey: ["expenseDataById", session?.user?.email, expenseId],
+    queryKey: ["expenseDataById", session?.user?.email],
     queryFn: () => fetchExpenseById(expenseId!),
-    enabled: !!session?.user?.email,
+    enabled: !!session?.user?.email && !!expenseId,
   });
   
 

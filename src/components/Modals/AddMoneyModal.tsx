@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { X, DollarSign } from "lucide-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
+import savingsContext from "@/app/context/SavingsContext";
 
 interface AddMoneyForm {
   amount: number;
@@ -16,7 +17,6 @@ interface AddMoneyModalProps {
   goalTitle: string;
   currentAmount: number;
   targetAmount: number;
-  onSuccess?: () => void;
 }
 
 const AddMoneyModal = ({
@@ -26,8 +26,10 @@ const AddMoneyModal = ({
   goalTitle,
   currentAmount,
   targetAmount,
-  onSuccess,
 }: AddMoneyModalProps) => {
+
+
+  const {refetchSavingsData} =  useContext(savingsContext)!
   const {
     register,
     handleSubmit,
@@ -48,7 +50,7 @@ const AddMoneyModal = ({
       if (res.status === 200) {
         toast.success("Money added successfully!");
         reset();
-        if (onSuccess) onSuccess();
+        refetchSavingsData()
         onClose();
       }
     } catch (error: any) {
@@ -117,6 +119,10 @@ const AddMoneyModal = ({
                       value: 0.01,
                       message: "Amount must be greater than 0",
                     },
+                    max:{
+                      value:targetAmount-currentAmount,
+                      message:`Amount must be less than or equal to ${targetAmount-currentAmount}`
+                    }
                   })}
                   className="block w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
                 />
