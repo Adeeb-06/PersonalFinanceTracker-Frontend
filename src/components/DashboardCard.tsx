@@ -23,8 +23,6 @@ export default function DashboardOverviewCard() {
 
   const { data: session, status } = useSession();
 
-
-
   const year: number = Number(selectedMonth.split("-")[0]);
   const month: number = Number(selectedMonth.split("-")[1]);
 
@@ -58,35 +56,7 @@ export default function DashboardOverviewCard() {
     refetchDashboardData();
   };
 
-  // Mock data - replace with actual data
-  const monthData = {
-    balance: 12450.5,
-    income: 8240.0,
-    expense: 3280.5,
-    savings: 4959.5,
-    savingsRate: 60.2,
-    transactionCount: 47,
-    topCategory: "Groceries",
-    topCategoryAmount: 850.5,
-    previousMonth: {
-      balance: 11200.0,
-      expense: 3580.0,
-    },
-  };
-
-  const balanceChange = monthData.balance - monthData.previousMonth.balance;
-  const balanceChangePercent = (
-    (balanceChange / monthData.previousMonth.balance) *
-    100
-  ).toFixed(1);
-  const isBalanceUp = balanceChange > 0;
-
-  const expenseChange = monthData.expense - monthData.previousMonth.expense;
-  const expenseChangePercent = (
-    (expenseChange / monthData.previousMonth.expense) *
-    100
-  ).toFixed(1);
-  const isExpenseUp = expenseChange > 0;
+console.log(dashboardReport)
 
   const isDeficit = dashboardReport?.surplusPercentage < 0;
 
@@ -94,8 +64,8 @@ export default function DashboardOverviewCard() {
     <div className="w-full bg-secondary border border-gray-800 rounded-2xl overflow-hidden shadow-2xl">
       {/* Header */}
       <div className="p-6 border-b border-gray-800">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center md:flex-row flex-col gap-4 justify-between">
+          <div className="md:text-left text-center">
             <h2 className="text-2xl font-bold text-white mb-1">
               Financial Overview
             </h2>
@@ -103,17 +73,16 @@ export default function DashboardOverviewCard() {
           </div>
 
           {/* Month Selector */}
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <div className="relative flex gap-2">
             <input
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
+              className="md:pl-10 pl-2 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
             />
             <button
               onClick={() => handleDate(selectedMonth)}
-              className="ml-2 px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
+              className="ml-2 md:ml-0 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
             >
               Update
             </button>
@@ -190,7 +159,7 @@ export default function DashboardOverviewCard() {
             <div className="flex items-center gap-2 mb-2">
               <Target className="w-4 h-4 text-blue-400" />
               <span className="text-xs text-gray-400 uppercase tracking-wide">
-               Passive Savings
+                Passive Savings
               </span>
             </div>
             <p className="text-xl font-bold text-white">
@@ -250,7 +219,8 @@ export default function DashboardOverviewCard() {
             </div>
             <p className="text-xs text-gray-500 mt-2">
               {(
-                (dashboardReport?.topExpenseCategory?.amount / dashboardReport?.totalExpense) *
+                (dashboardReport?.topExpenseCategory?.amount /
+                  dashboardReport?.totalExpense) *
                 100
               ).toFixed(1)}
               % of total expenses
@@ -265,11 +235,11 @@ export default function DashboardOverviewCard() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Income vs Expense</span>
-                <span className={`text-sm font-bold ${isDeficit ? "text-red-400" : "text-green-400"}`}>
-                 {
-                  isDeficit ? "Deficit " : "Surplus "
-                 }
-                 {dashboardReport?.surplusPercentage?.toFixed(0)}%
+                <span
+                  className={`text-sm font-bold ${isDeficit ? "text-red-400" : "text-green-400"}`}
+                >
+                  {isDeficit ? "Deficit " : "Surplus "}
+                  {dashboardReport?.surplusPercentage?.toFixed(0)}%
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -280,8 +250,12 @@ export default function DashboardOverviewCard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Budget Status</span>
-                <span className={`text-sm font-bold ${dashboardReport?.budgetStatus?.status ? "text-green-400" : "text-red-400"}`}>
-                  {dashboardReport?.budgetStatus?.status  ? "On Track" : "Off Track"}
+                <span
+                  className={`text-sm font-bold ${dashboardReport?.budgetStatus?.status ? "text-green-400" : "text-red-400"}`}
+                >
+                  {dashboardReport?.budgetStatus?.status
+                    ? "On Track"
+                    : "Off Track"}
                 </span>
               </div>
             </div>
