@@ -50,13 +50,13 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#EFEEEA] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen b flex items-center justify-center px-4 py-12">
       <div className="relative max-w-md w-full">
         {/* Soft background glow */}
         <div className="absolute -inset-1 rounded-3xl bg-[#273F4F]/20 blur-xl"></div>
 
         {/* Card */}
-        <div className="relative bg-[#273F4F] rounded-3xl p-8 shadow-2xl border border-white/10">
+        <div className="relative bg-secondary rounded-3xl p-8 shadow-2xl border border-white/10">
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">Login</h2>
