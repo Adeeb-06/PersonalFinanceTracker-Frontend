@@ -28,6 +28,22 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { userData } = useContext(UserContext)!;
 
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const menuItems = [
     { icon: Home, label: "Dashboard", href: "/dashboard" },
     { icon: DollarSign, label: "Income", href: "/dashboard/income" },
@@ -95,7 +111,6 @@ export default function Sidebar() {
         <div
           className={`flex items-center ${isCollapsed ? "justify-center" : "space-x-3"}`}
         >
-         
           {!isCollapsed && (
             <div className="flex-1">
               <p className="text-xl font-medium text-white">
@@ -111,7 +126,9 @@ export default function Sidebar() {
             className="btn btn-sm btn-primary text-secondary"
           >
             <User className="w-3 h-3" />
-            Logout
+            {!isCollapsed && (
+              <span className="font-medium text-sm">Logout</span>
+            )}
           </button>
         </div>
       </div>

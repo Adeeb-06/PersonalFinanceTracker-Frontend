@@ -1,112 +1,80 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Menu,
-  X,
-  Wallet,
-  BarChart3,
-  PiggyBank,
-  Settings,
-  User,
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { User, BarChart3, LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Logo from "./Logo";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const {data : session , status }= useSession();
+  const { data: session, status } = useSession();
+  const [scrolled, setScrolled] = useState(false);
 
-  const navItems = [
-    { name: "Dashboard", icon: BarChart3, href: "#dashboard" },
-    { name: "Transactions", icon: Wallet, href: "#transactions" },
-    { name: "Budget", icon: PiggyBank, href: "#budget" },
-    { name: "Settings", icon: Settings, href: "#settings" },
-  ];
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  console.log(session, "asfd");
   return (
-    <nav className="bg-black border-b border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-         <Logo/>
+    <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+      <nav
+        className={`
+          pointer-events-auto
+          flex items-center justify-between 
+          pl-5 pr-5 py-3
+          w-auto min-w-[340px] max-w-xl
+           backdrop-blur-xl 
+          border border-white/5 
+          rounded-full shadow-2xl shadow-black/20
+          transition-all duration-500 ease-out
+          "py-2.5 bg-zinc-900/90 shadow-black/40"
+        `}
+      >
+        {/* Logo Section */}
+        <div className="mr-12">
+          <Logo />
+        </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors duration-200"
+        {/* Links Section */}
+        <div className="flex items-center gap-1">
+          {/* Dashboard Link */}
+          <Link
+            href="/dashboard"
+            className="group cursor-pointer flex items-center gap-2 px-4 py-2 rounded-full text-md font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+          >
+            <BarChart3 className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
+            <span>Dashboard</span>
+          </Link>
+
+          {/* Divider */}
+          <div className="h-6 w-px bg-white/10 mx-2"></div>
+
+          {/* Auth Section */}
+          {status === "loading" ? (
+            <div className="h-9 w-20 rounded-full bg-zinc-800 animate-pulse"></div>
+          ) : status === "authenticated" ? (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => signOut()}
+                className="flex items-center cursor-pointer gap-2 bg-white/10 hover:bg-red-500/10 hover:text-red-400 text-zinc-200 text-md font-semibold px-4 py-2 rounded-full transition-all border border-white/5"
               >
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium">{item.name}</span>
-              </a>
-            ))}
-          </div>
-
-          {/* User Profile (Desktop) */}
-          <div className="hidden md:flex items-center">
-
-            {
-              status === "loading" ? (
-                <span className="text-gray-300 mr-4">Loading...</span>
-              ) : status === "authenticated" ? (
-                <><button onClick={() => signOut()} className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
-                    <User className="w-5 h-5" />
-                    <span className="font-medium">Logout</span>
-                  </button><Link href="/dashboard" className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
-                      <User className="w-5 h-5" />
-                      <span className="font-medium">{session?.user?.email}</span>
-                    </Link></>
-              ) : (
-                <Link href="/auth/login" className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
-                  <User className="w-5 h-5" />
-                  <span className="font-medium">Login</span>
-                </Link>
-              )
-            }
-           
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors duration-200"
+                <LogOut className="w-3.5 h-3.5" />
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="flex items-center gap-2 cursor-pointer bg-white text-black hover:bg-zinc-200 text-md font-bold px-5 py-2 rounded-full transition-all shadow-lg shadow-white/5"
             >
-              {isOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
-          </div>
+              <User className="w-3.5 h-3.5" />
+              Login
+            </Link>
+          )}
         </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden bg-gray-900 border-t border-gray-800">
-          <div className="px-4 pt-2 pb-4 space-y-1">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors duration-200"
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium">{item.name}</span>
-              </a>
-            ))}
-            <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-colors duration-200">
-              <User className="w-5 h-5" />
-              <span className="font-medium">Profile</span>
-            </button>
-          </div>
-        </div>
-      )}
-    </nav>
+      </nav>
+    </div>
   );
 }
