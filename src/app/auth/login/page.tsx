@@ -66,7 +66,7 @@ export default function LoginForm() {
           </div>
 
           {/* Google Button */}
-          <button onClick={() => signIn("google")} className="w-full flex items-center justify-center gap-3 py-3 bg-white text-[#273F4F] font-semibold rounded-xl hover:scale-[1.02] active:scale-100 transition-all mb-6 shadow">
+          <button onClick={() => signIn("google", {callbackUrl: "/dashboard"})} className="w-full flex items-center justify-center gap-3 py-3 bg-white text-[#273F4F] font-semibold rounded-xl hover:scale-[1.02] active:scale-100 transition-all mb-6 shadow">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
