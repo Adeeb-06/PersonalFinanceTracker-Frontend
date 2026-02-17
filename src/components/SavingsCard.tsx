@@ -156,6 +156,7 @@ const SavingsCard = ({
       )}
       {isUpdateModalOpen && (
         <SavingsUpdateModal
+        
           id={goal.id || goal._id}
           setIsUpdateModalOpen={setIsUpdateModalOpen}
         />

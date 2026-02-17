@@ -91,6 +91,7 @@ export default function SavingsPage() {
 
               return (
                 <SavingsCard
+                  key={goal._id}
                   goal={goal}
                   progress={progress}
                   daysLeft={daysLeft}

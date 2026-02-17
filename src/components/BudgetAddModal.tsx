@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { X, DollarSign, Calendar } from "lucide-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
+import budgetContext from "@/app/context/BudgetContext";
 
 interface Budget {
   amount: number;
@@ -17,6 +18,8 @@ export default function BudgetAddModal({
 }) {
   const { register, handleSubmit } = useForm<Budget>();
   const { data: session } = useSession();
+
+  const {refetchBudgetData} = useContext(budgetContext)!
 
   const onSubmit = async (data: Budget) => {
     const newData = {
@@ -35,6 +38,7 @@ export default function BudgetAddModal({
       if (res.status === 201) {
         toast.success("Budget added successfully!");
         setIsOpen(false);
+        refetchBudgetData()
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

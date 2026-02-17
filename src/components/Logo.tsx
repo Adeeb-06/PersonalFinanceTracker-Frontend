@@ -1,31 +1,20 @@
 import React from "react";
-import { Wallet, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { Wallet } from "lucide-react";
 
 const Logo = () => {
   return (
-    <div className="flex items-center gap-3 group cursor-pointer">
-      {/* Icon Container with Gradient Background */}
-      <div className="relative">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-linear-to-br from-primary to-secondary rounded-xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
-        {/* Icon wrapper */}
-        <div className="relative bg-linear-to-br from-primary to-secondary p-2.5 rounded-xl shadow-lg group-hover:shadow-xl transform group-hover:scale-105 transition-all duration-300">
-          <Wallet className="w-6 h-6 text-white" strokeWidth={2.5} />
-        </div>
-        
+    <Link href="/" className="flex items-center gap-2.5 group select-none">
+      <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-all duration-300 ease-out">
+        <Wallet
+          className="w-5 h-5 text-primary transform group-hover:scale-110 transition-transform duration-300"
+          strokeWidth={2.5}
+        />
       </div>
-
-      {/* App Name with Gradient Text */}
-      <div className="flex flex-col">
-        <span className="text-2xl font-black text-primary  tracking-tight">
-          TrackIt
-        </span>
-        <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-widest -mt-1">
-          Finance
-        </span>
-      </div>
-    </div>
+      <span className="text-2xl font-bold tracking-tight text-primary transition-colors duration-300">
+        TrackIt
+      </span>
+    </Link>
   );
 };
 
