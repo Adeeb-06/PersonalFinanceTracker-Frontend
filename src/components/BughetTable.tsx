@@ -57,9 +57,9 @@ export default function BudgetTable() {
             <BudgetSkeleton key={idx} />
           ))
        )}
-       {!showSkeleton && budgetData?.data.length === 0 && <NoBudget />}
+       {!showSkeleton && budgetData?.data?.length === 0 && <NoBudget />}
        {
-        !showSkeleton && budgetData?.data.length > 0 && (
+        !showSkeleton && budgetData?.data?.length! > 0 && (
           budgetData?.data?.map((budget, index) => (
               <div
                 key={budget._id}

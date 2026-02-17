@@ -49,7 +49,7 @@ export default function IncomeCategoryAnalytics() {
   // Sync state with context
   useEffect(() => {
     if (selectedCategory) {
-      console.log(selectedCategory)
+      console.log(selectedCategory);
       setIncomeCategory(selectedCategory);
     }
   }, [selectedCategory, setIncomeCategory]);
@@ -66,7 +66,7 @@ export default function IncomeCategoryAnalytics() {
   );
   const data = incomeCategoryAnalytics?.data;
 
-  console.log(data)
+  console.log(data);
 
   // Safety checks for data
   const totalAmount = data?.totalAmount || 0;
@@ -133,9 +133,7 @@ export default function IncomeCategoryAnalytics() {
                     <h3 className="text-2xl font-bold text-primary">
                       {selectedCategory} Analytics
                     </h3>
-                    <p className="text-sm text-primary/80">
-                      Income breakdown
-                    </p>
+                    <p className="text-sm text-primary/80">Income breakdown</p>
                   </div>
                 </>
               )}
@@ -168,7 +166,9 @@ export default function IncomeCategoryAnalytics() {
                       borderRadius: "8px",
                       color: "#fff",
                     }}
-                    formatter={(value: number) => `$${value.toFixed(2)}`}
+                    formatter={(value: number | undefined) =>
+                      value !== undefined ? `$${value.toFixed(2) || 0}` : ""
+                    }
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -288,16 +288,15 @@ export default function IncomeCategoryAnalytics() {
                     ).toFixed(2)}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">
                     % of Total Expenses
                   </span>
                   <span className="text-sm font-bold text-white">
-                     {data?.percentageOfTotal?.toFixed(2) || 0}%
+                    {data?.percentageOfTotal?.toFixed(2) || 0}%
                   </span>
                 </div>
-               
               </div>
             </div>
           </div>

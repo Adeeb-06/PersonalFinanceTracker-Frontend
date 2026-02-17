@@ -1,12 +1,12 @@
 import axios from "axios";
 import bcrypt from "bcryptjs";
-import NextAuth, { Account, Session } from "next-auth";
+import NextAuth, { Account, AuthOptions, Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 
 import Google from "next-auth/providers/google";
 
-interface User {
+interface BackendUser {
   id: string;
   name: string;
   email: string;
@@ -14,8 +14,7 @@ interface User {
   balance: number;
 }
 
-export const authOptions = {
-  // Configure one or more authentication providers
+export const authOptions: AuthOptions = {
   providers: [
     Credentials({
       name: "Credentials",
@@ -23,12 +22,11 @@ export const authOptions = {
         email: { label: "email", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        const { email, password } = credentials as User;
+      async authorize(credentials) {
+        const { email, password } = credentials as unknown as BackendUser;
+
         const res = await axios.get("http://localhost:9000/api/users");
-        const user = res.data.find((u: User) => u.email === email);
-
-
+        const user = res.data.find((u: BackendUser) => u.email === email);
 
         if (!user) {
           throw new Error("No User Found with the Email");
@@ -40,7 +38,7 @@ export const authOptions = {
         }
 
         return {
-          id: user._id.toString(), // REQUIRED
+          id: user._id.toString(),
           email: user.email,
           name: user.username,
           balance: user.balance,
@@ -48,57 +46,57 @@ export const authOptions = {
       },
     }),
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+
   session: {
     strategy: "jwt",
   },
+
   callbacks: {
-  async signIn({ user, account }: { user: User; account: Account }) {
-  try {
-    if (account?.provider === "google") {
-      const { data: exists } = await axios.get(
-        `http://localhost:9000/api/users/${user.email}/exists`
-      );
+    async signIn({ user, account }) {
+      try {
+        if (account?.provider === "google") {
+          const { data: exists } = await axios.get(
+            `http://localhost:9000/api/users/${user.email}/exists`,
+          );
 
-      if (!exists) {
-        await axios.post(`http://localhost:9000/api/users/register`, {
-          username: user.name,
-          email: user.email,
-          password: "google_oauth_no_password",
-        });
+          if (!exists) {
+            await axios.post(`http://localhost:9000/api/users/register`, {
+              username: user.name,
+              email: user.email,
+              password: "google_oauth_no_password",
+            });
+          }
+        }
+        return true;
+      } catch (err) {
+        console.error(err);
+        return false;
       }
-    }
-    return true; // must always return
-  } catch (err) {
-    console.error(err);
-    return false;
-  }
-}
-,
-    async jwt({ token, user , account}: { token: JWT; user?: User , account?: Account }) {
+    },
 
-
+    async jwt({ token, user, account }) {
       if (user) {
         token.email = user.email;
         token.id = user.id;
         token.balance = user.balance;
       }
 
-      if(account?.provider === "google" && user) {
+      if (account?.provider === "google" && user) {
+        const res = await axios.get(
+          `http://localhost:9000/api/users/${user.email}`,
+        );
 
-        const res = await axios.get(`http://localhost:9000/api/users/${user.email}`);
-        token.email = user.email;
-        token.id = user.id;
         token.balance = res.data.balance;
       }
-    
+
       return token;
     },
 
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;

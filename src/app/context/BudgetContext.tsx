@@ -1,6 +1,6 @@
 "use client"
-import { QueryObserverResult } from "@tanstack/react-query";
-import { createContext } from "react";
+import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
+import { createContext, Dispatch, SetStateAction } from "react";
 
 interface BudgetItem {
   _id: string | number;
@@ -20,14 +20,14 @@ interface BudgetResponse {
 }
 
 interface BudgetContextType {
-  budgetData: BudgetResponse;
-  refetchBudgetData: () => Promise<QueryObserverResult<BudgetItem[], Error>>;
+  budgetData: BudgetResponse | undefined;
+  refetchBudgetData: (options?: RefetchOptions) => Promise<QueryObserverResult<any, Error>>;
   isBudgetLoading: boolean;
-  budgetByMonthData: BudgetItem | null;
-  refetchBudgetByMonthData: () => Promise<QueryObserverResult<BudgetItem, Error>>;
+  budgetByMonthData: BudgetItem | undefined;
+  refetchBudgetByMonthData: (options?: RefetchOptions) => Promise<QueryObserverResult<BudgetItem, Error>>;
   isBudgetByMonthLoading: boolean;
-  month: string;
-  setMonth: React.Dispatch<React.SetStateAction<string>>;
+  month: string | undefined;
+  setMonth: Dispatch<SetStateAction<string>>; 
 }
 
 const budgetContext = createContext<BudgetContextType | null>(null);

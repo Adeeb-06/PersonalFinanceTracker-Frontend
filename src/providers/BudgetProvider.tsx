@@ -13,9 +13,12 @@ interface Props {
 }
 
 interface BudgetByMonth {
+  _id: string;
   amount: number;
   spent: number;
   remaining: number;
+  month: string;
+  year: number;
 }
 
 const BudgetProvider = ({children}:Props) => {
@@ -83,7 +86,7 @@ const BudgetProvider = ({children}:Props) => {
         refetch: refetchBudgetByMonthData,
     } = useQuery<BudgetByMonth>({
         queryKey: ["budgetByMonthData", session?.user?.email, month],
-        queryFn: () => getBudgetByMonth(session?.user?.email, month),
+        queryFn: () => getBudgetByMonth(session?.user?.email!, month),
         enabled: !!session?.user?.email && !!month,
     });
     

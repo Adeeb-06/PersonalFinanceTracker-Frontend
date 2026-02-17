@@ -1,5 +1,6 @@
 "use client";
-import { createContext } from "react";
+import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
+import { createContext, Dispatch, SetStateAction } from "react";
 
 export interface Category {
   _id: string;
@@ -11,38 +12,33 @@ export interface Category {
 export interface CategoriesContextType {
   incomeCategories: Category[];
   expenseCategories: Category[];
-  refetchIncomeCategories: () => void;
-  refetchExpenseCategories: () => void;
+  refetchIncomeCategories: (options?: RefetchOptions) => Promise<QueryObserverResult<any, Error>>;
+  refetchExpenseCategories: (options?: RefetchOptions) => Promise<QueryObserverResult<any, Error>>;
   incomeCategoriesLoading: boolean;
   expenseCategoriesLoading: boolean;
   incomeCategoriesError: unknown;
   expenseCategoriesError: unknown;
-  category: string;
-  categoryAnalytics: any;
-  categoryAnalyticsLoading: boolean;
-  refetchCategoryAnalytics: () => void;
-  categoryAnalyticsError: unknown;
-  setCategory: (category: string) => void;
-  expenseCategory: string;
-  setExpenseCategory: (category: string) => void;
-  incomeCategory: string;
-  setIncomeCategory: (category: string) => void;
+  setCategory: Dispatch<SetStateAction<string | undefined>>; 
+  expenseCategory: string | undefined;
+  setExpenseCategory: Dispatch<SetStateAction<string | undefined>>;
+  incomeCategory: string | undefined;
+  setIncomeCategory: Dispatch<SetStateAction<string | undefined>>;
   expenseCategoryAnalytics: any;
   expenseCategoryAnalyticsLoading: boolean;
-  refetchExpenseCategoryAnalytics: () => void;
+  refetchExpenseCategoryAnalytics: (options?: RefetchOptions) => Promise<QueryObserverResult<any, Error>>;
   expenseCategoryAnalyticsError: unknown;
   incomeCategoryAnalytics: any;
   incomeCategoryAnalyticsLoading: boolean;
-  refetchIncomeCategoryAnalytics: () => void;
+  refetchIncomeCategoryAnalytics: (options?: RefetchOptions) => Promise<QueryObserverResult<any, Error>>;
   incomeCategoryAnalyticsError: unknown;
-  expenseMonth: number;
-  expenseYear: number;
-  setExpenseMonth: (month: number) => void;
-  setExpenseYear: (year: number) => void;
-  incomeMonth: number;
-  incomeYear: number;
-  setIncomeMonth: (month: number) => void;
-  setIncomeYear: (year: number) => void;
+  expenseMonth: number | undefined;
+  expenseYear: number | undefined;
+  setExpenseMonth: Dispatch<SetStateAction<number | undefined>>;
+  setExpenseYear: Dispatch<SetStateAction<number | undefined>>;
+  incomeMonth: number | undefined;
+  incomeYear: number | undefined;
+  setIncomeMonth: Dispatch<SetStateAction<number | undefined>>;
+  setIncomeYear: Dispatch<SetStateAction<number | undefined>>;
 }
 
 const CategoriesContext = createContext<CategoriesContextType | null>(null);

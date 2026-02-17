@@ -166,7 +166,9 @@ export default function ExpenseCategoryAnalytics() {
                       borderRadius: "8px",
                       color: "#fff",
                     }}
-                    formatter={(value: number) => `$${value?.toFixed(2) || 0}`}
+                    formatter={(value: number | undefined) =>
+                      value !== undefined ? `$${value.toFixed(2) || 0}` : ""
+                    }
                   />
                 </PieChart>
               </ResponsiveContainer>
