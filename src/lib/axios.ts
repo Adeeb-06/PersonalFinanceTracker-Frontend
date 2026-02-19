@@ -6,16 +6,16 @@ const api = axios.create({
   withCredentials: true,
 });
 
-api.interceptors.request.use(async (config) => {
-  const session = await getSession();
+// api.interceptors.request.use(async (config) => {
+//   const session = await getSession();
 
-  console.log(session?.accessToken , "axios")
+//   console.log(session?.accessToken , "axios")
 
-  if (session?.accessToken) {
-    config.headers.Authorization = `Bearer ${session.accessToken}`;
-  }
+//   if (session?.accessToken) {
+//     config.headers.Authorization = `Bearer ${session.accessToken}`;
+//   }
 
-  return config;
-});
+//   return config;
+// });
 
 export default api;

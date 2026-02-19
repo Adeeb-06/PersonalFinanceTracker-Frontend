@@ -78,6 +78,7 @@ export const authOptions: AuthOptions = {
         console.error(err);
         return false;
       }
+      return true;
     },
 
     async jwt({ token, user, account }) {
