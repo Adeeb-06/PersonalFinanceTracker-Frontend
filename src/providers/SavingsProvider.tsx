@@ -11,7 +11,9 @@ const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchSavings = async () => {
     try {
-      const res = await api.get(`api/savings/get/${session?.user?.email}`);
+      const res = await api.get(`api/savings/get/${session?.user?.email}`, {
+        withCredentials: true,
+      });
       return res.data;
     } catch (error: any) {
       console.log(error);
@@ -23,6 +25,9 @@ const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const res = await api.get(
         `/api/savings/get/${savingsId}/${session?.user?.email}`,
+        {
+          withCredentials: true,
+        },
       );
       console.log(res);
       return res.data;

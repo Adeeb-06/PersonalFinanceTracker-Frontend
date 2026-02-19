@@ -31,7 +31,11 @@ const SavingsAddModal = ({
     console.log(data);
     try {
       const email = session?.user?.email;
-      const res = await api.post("/api/savings/add", { ...data, email });
+      const res = await api.post(
+        "/api/savings/add",
+        { ...data, email },
+        { withCredentials: true },
+      );
       toast.success(res.data.message);
       setIsModalOpen(false);
       refetchSavingsData();

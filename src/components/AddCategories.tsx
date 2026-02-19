@@ -27,11 +27,15 @@ const AddCategories = () => {
   const addCategory = async (type: "income" | "expense") => {
     if (type === "income") {
       try {
-        const res = await api.post("api/categories/create-category", {
-          name: newIncomeCat,
-          type: "income",
-          userEmail: userData?.email,
-        });
+        const res = await api.post(
+          "api/categories/create-category",
+          {
+            name: newIncomeCat,
+            type: "income",
+            userEmail: userData?.email,
+          },
+          { withCredentials: true },
+        );
         console.log(res);
         if (res.status === 201) {
           refetchIncomeCategories();
@@ -44,11 +48,15 @@ const AddCategories = () => {
     } else {
       if (!newExpenseCat.trim()) return;
       try {
-        const res = await api.post("api/categories/create-category", {
-          name: newExpenseCat,
-          type: "expense",
-          userEmail: userData?.email,
-        });
+        const res = await api.post(
+          "api/categories/create-category",
+          {
+            name: newExpenseCat,
+            type: "expense",
+            userEmail: userData?.email,
+          },
+          { withCredentials: true },
+        );
         if (res.status == 201) {
           refetchExpenseCategories();
           refetchExpenseData();
@@ -62,8 +70,8 @@ const AddCategories = () => {
 
   const removeCategory = async (type: "income" | "expense", cat: string) => {
     try {
-      const res = await api.delete(`api/categories/${cat}` , {
-        withCredentials:true
+      const res = await api.delete(`api/categories/${cat}`, {
+        withCredentials: true,
       });
       console.log(res);
       if (res.status === 200) {

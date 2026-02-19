@@ -38,7 +38,9 @@ export default function DeleteConfirmationModal({
 
   const deleteTransaction = async (id: string, type: string) => {
     if (type === "expense") {
-      const res = await api.delete(`/api/expense/delete-expense/${id}`);
+      const res = await api.delete(`/api/expense/delete-expense/${id}`, {
+        withCredentials: true,
+      });
       if (res.status === 200) {
         toast.success("Transaction deleted successfully");
         setIsOpen(false);
@@ -51,7 +53,9 @@ export default function DeleteConfirmationModal({
         toast.error("Failed to delete transaction");
       }
     } else {
-      const res = await api.delete(`/api/balance/delete-income/${id}`);
+      const res = await api.delete(`/api/balance/delete-income/${id}`, {
+        withCredentials: true,
+      });
       if (res.status === 200) {
         toast.success("Transaction deleted successfully");
         setIsOpen(false);

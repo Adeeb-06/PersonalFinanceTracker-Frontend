@@ -21,17 +21,17 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
 
   const fetchIncomeCategories = async () => {
     if (!session?.user?.email) return [];
-    const res = await api.get(
-      `api/categories/income/${session.user.email}`
-    );
+    const res = await api.get(`api/categories/income/${session.user.email}`, {
+      withCredentials: true,
+    });
     return res.data.data;
   };
 
   const fetchExpenseCategories = async () => {
     if (!session?.user?.email) return [];
-    const res = await api.get(
-      `api/categories/expense/${session.user.email}`
-    );
+    const res = await api.get(`api/categories/expense/${session.user.email}`, {
+      withCredentials: true,
+    });
     return res.data.data;
   };
 
@@ -42,7 +42,8 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
   ) => {
     if (!session?.user?.email) return [];
     const res = await api.get(
-      `api/categories/analytics/${session.user.email}?category=${category}&month=${month}&year=${year}`
+      `api/categories/analytics/${session.user.email}?category=${category}&month=${month}&year=${year}`,
+      { withCredentials: true },
     );
     return res.data;
   };
@@ -54,7 +55,8 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
   ) => {
     if (!session?.user?.email) return [];
     const res = await api.get(
-      `api/categories/analytics/${session.user.email}?category=${expenseCategory}&month=${expenseMonth}&year=${expenseYear}`
+      `api/categories/analytics/${session.user.email}?category=${expenseCategory}&month=${expenseMonth}&year=${expenseYear}`,
+      { withCredentials: true },
     );
     console.log(res);
     return res.data;
@@ -67,7 +69,8 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
   ) => {
     if (!session?.user?.email) return [];
     const res = await api.get(
-      `api/categories/analytics/${session.user.email}?category=${incomeCategory}&month=${incomeMonth}&year=${incomeYear}`
+      `api/categories/analytics/${session.user.email}?category=${incomeCategory}&month=${incomeMonth}&year=${incomeYear}`,
+      { withCredentials: true },
     );
     return res.data;
   };
@@ -94,8 +97,6 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     enabled: !!session?.user?.email,
   });
 
-
-
   const {
     data: expenseCategoryAnalytics,
     isLoading: expenseCategoryAnalyticsLoading,
@@ -105,13 +106,21 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     queryKey: [
       "expenseCategoryAnalytics",
       session?.user?.email,
-      expenseMonth, 
+      expenseMonth,
       expenseYear,
       expenseCategory,
     ],
     queryFn: () =>
-      fetchExpenseCategoryAnalytics(expenseCategory!, expenseMonth!, expenseYear!),
-    enabled: !!session?.user?.email && !!expenseMonth && !!expenseYear && !!expenseCategory,
+      fetchExpenseCategoryAnalytics(
+        expenseCategory!,
+        expenseMonth!,
+        expenseYear!,
+      ),
+    enabled:
+      !!session?.user?.email &&
+      !!expenseMonth &&
+      !!expenseYear &&
+      !!expenseCategory,
   });
 
   const {
@@ -127,8 +136,13 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
       incomeYear,
       incomeCategory,
     ],
-    queryFn: () => fetchIncomeCategoryAnalytics(incomeCategory!, incomeMonth!, incomeYear!),
-    enabled: !!session?.user?.email && !!incomeMonth && !!incomeYear && !!incomeCategory,
+    queryFn: () =>
+      fetchIncomeCategoryAnalytics(incomeCategory!, incomeMonth!, incomeYear!),
+    enabled:
+      !!session?.user?.email &&
+      !!incomeMonth &&
+      !!incomeYear &&
+      !!incomeCategory,
   });
 
   const data = {

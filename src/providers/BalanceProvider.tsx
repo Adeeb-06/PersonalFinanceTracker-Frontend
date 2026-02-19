@@ -44,6 +44,7 @@ const BalanceProvider = ({ children }: Props) => {
         `api/balance/get-income-data/${session?.user?.email}`,
         {
           params,
+          withCredentials: true,
         },
       );
 
@@ -56,7 +57,9 @@ const BalanceProvider = ({ children }: Props) => {
 
   const fetchIncomeDataById = async (incomeId: string) => {
     try {
-      const res = await api.get(`api/balance/get-income-by-id/${incomeId}`);
+      const res = await api.get(`api/balance/get-income-by-id/${incomeId}`, {
+        withCredentials: true,
+      });
       console.log(res, "income prov");
       return res.data;
     } catch (error) {

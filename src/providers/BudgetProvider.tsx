@@ -28,6 +28,7 @@ const BudgetProvider = ({ children }: Props) => {
     try {
       const res = await api.get(
         `api/budget/get-budget-by-month/${userEmail}?month=${month}`,
+        { withCredentials: true },
       );
 
       return res.data;
@@ -47,6 +48,7 @@ const BudgetProvider = ({ children }: Props) => {
         `api/budget/get-budget/${session?.user?.email}`,
         {
           params,
+          withCredentials: true,
         },
       );
 

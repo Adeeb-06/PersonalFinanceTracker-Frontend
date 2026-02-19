@@ -13,6 +13,9 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchDashboardData = async () => {
     const response = await api.get(
       `api/dashboard/report/${userData?.email}?month=${month}&year=${year}`,
+      {
+        withCredentials: true,
+      }
     );
     return response.data;
   };
@@ -41,7 +44,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
         setMonth,
         year,
         setYear,
-      }}
+      }} 
     >
       {children}
     </DashboardContext.Provider>

@@ -37,9 +37,13 @@ const AddMoneyModal = ({
 
   const onSubmit = async (data: AddMoneyForm) => {
     try {
-      const res = await api.put(`api/savings/add-money/${savingsId}`, {
-        amount: Number(data.amount),
-      });
+      const res = await api.put(
+        `api/savings/add-money/${savingsId}`,
+        {
+          amount: Number(data.amount),
+        },
+        { withCredentials: true },
+      );
 
       if (res.status === 200) {
         toast.success("Money added successfully!");

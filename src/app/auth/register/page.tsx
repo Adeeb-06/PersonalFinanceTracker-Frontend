@@ -27,7 +27,9 @@ export default function RegisterForm() {
 
   const onsubmit: SubmitHandler<FormData> = async (data: FormData) => {
     try {
-      const res = await api.post("api/users/register", data);
+      const res = await api.post("api/users/register", data, {
+        withCredentials: true,
+      });
       if (res.status === 201) {
         router.push("/auth/login");
         toast.success("Registered Successfully! Please Login.");

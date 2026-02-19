@@ -44,6 +44,7 @@ const ExpenseProvider = ({ children }: Props) => {
         `/api/expense/get-expense/${session?.user?.email}`,
         {
           params,
+          withCredentials: true,
         },
       );
       return res.data;
@@ -59,6 +60,9 @@ const ExpenseProvider = ({ children }: Props) => {
     try {
       const res = await api.get(
         `/api/expense/get-total-expense-by-month/${session?.user?.email}?month=${monthExpense}&year=${year}`,
+        {
+          withCredentials: true,
+        },
       );
       console.log(res.data);
       return res.data;
@@ -105,9 +109,9 @@ const ExpenseProvider = ({ children }: Props) => {
 
   const fetchExpenseById = async (id: string) => {
     try {
-      const res = await api.get(
-        `/api/expense/get-expense-by-id/${expenseId}`,
-      );
+      const res = await api.get(`/api/expense/get-expense-by-id/${expenseId}`, {
+        withCredentials: true,
+      });
       return res.data;
     } catch (error) {
       console.error(error);

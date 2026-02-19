@@ -28,7 +28,9 @@ export default function BudgetAddModal({
       userEmail: session?.user?.email,
     };
     try {
-      const res = await api.post("api/budget/add-budget", newData);
+      const res = await api.post("api/budget/add-budget", newData, {
+        withCredentials: true,
+      });
 
       if (res.status === 201) {
         toast.success("Budget added successfully!");

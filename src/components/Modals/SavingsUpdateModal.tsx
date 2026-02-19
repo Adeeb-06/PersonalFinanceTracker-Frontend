@@ -58,10 +58,14 @@ const SavingsUpdateModal = ({
     console.log(data);
     try {
       const email = session?.user?.email;
-      const res = await api.put(`/api/savings/update/${id}`, {
-        ...data,
-        email,
-      });
+      const res = await api.put(
+        `/api/savings/update/${id}`,
+        {
+          ...data,
+          email,
+        },
+        { withCredentials: true },
+      );
       toast.success(res.data.message);
       setIsUpdateModalOpen(false);
       refetchSavingsData();

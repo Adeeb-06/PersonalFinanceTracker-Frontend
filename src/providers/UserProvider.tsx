@@ -15,7 +15,9 @@ const UserProvider = ({ children }: Props) => {
 
   const fetchUserData = async () => {
     try {
-      const res = await api.get(`api/users/${session?.user.email}`);
+      const res = await api.get(`api/users/${session?.user.email}`, {
+        withCredentials: true,
+      });
       return res.data;
     } catch (error: unknown) {
       throw error;
