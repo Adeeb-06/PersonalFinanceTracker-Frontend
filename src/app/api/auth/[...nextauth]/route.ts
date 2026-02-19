@@ -65,7 +65,7 @@ export const authOptions: AuthOptions = {
             `api/users/${user.email}/exists`,
           );
 
-          if (!data.exists) {
+          if (data.exists === false) {
             await api.post(`api/users/register`, {
               username: user.name,
               email: user.email,
