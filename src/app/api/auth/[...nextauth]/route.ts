@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/lib/axios";
 import bcrypt from "bcryptjs";
 import NextAuth, { Account, AuthOptions, Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
@@ -25,7 +25,7 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         const { email, password } = credentials as unknown as BackendUser;
 
-        const res = await axios.get("http://localhost:9000/api/users");
+        const res = await api.get("api/users");
         const user = res.data.find((u: BackendUser) => u.email === email);
 
         if (!user) {
@@ -59,12 +59,12 @@ export const authOptions: AuthOptions = {
     async signIn({ user, account }) {
       try {
         if (account?.provider === "google") {
-          const { data: exists } = await axios.get(
-            `http://localhost:9000/api/users/${user.email}/exists`,
+          const { data: exists } = await api.get(
+            `api/users/${user.email}/exists`,
           );
 
           if (!exists) {
-            await axios.post(`http://localhost:9000/api/users/register`, {
+            await api.post(`api/users/register`, {
               username: user.name,
               email: user.email,
               password: "google_oauth_no_password",
@@ -86,9 +86,7 @@ export const authOptions: AuthOptions = {
       }
 
       if (account?.provider === "google" && user) {
-        const res = await axios.get(
-          `http://localhost:9000/api/users/${user.email}`,
-        );
+        const res = await api.get(`api/users/${user.email}`);
 
         token.balance = res.data.balance;
       }

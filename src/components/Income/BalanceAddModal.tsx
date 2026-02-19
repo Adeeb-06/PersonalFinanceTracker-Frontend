@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useContext, useState } from "react";
 import {
   X,
@@ -13,7 +13,8 @@ import {
   Axis3DIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import api from "@/lib/axios";
+import { isAxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
@@ -37,10 +38,11 @@ export default function BalanceAddModal({
 }) {
   const [transactionType, setTransactionType] = useState("income");
 
-  const {refetchBalanceData } = useContext(balanceContext)!
-  const {expenseCategories , incomeCategories} = useContext(CategoriesContext)!
-  const {refetchUser} = useContext(UserContext)!
-  const {refetchDashboardData} = useContext(DashboardContext)!
+  const { refetchBalanceData } = useContext(balanceContext)!;
+  const { expenseCategories, incomeCategories } =
+    useContext(CategoriesContext)!;
+  const { refetchUser } = useContext(UserContext)!;
+  const { refetchDashboardData } = useContext(DashboardContext)!;
 
   const {
     register,
@@ -49,8 +51,6 @@ export default function BalanceAddModal({
   } = useForm<Balance>();
   const { data: session } = useSession();
 
-
-
   const onSubmit = async (data: Balance) => {
     const newData = {
       ...data,
@@ -58,22 +58,18 @@ export default function BalanceAddModal({
     };
     console.log(newData);
     try {
-      const res = await axios.post(
-        "http://localhost:9000/api/balance/add-balance",
-        newData,
-        {
-          withCredentials: true,
-        },
-      );
-     if(res.status === 201){
-      refetchBalanceData()
-      refetchUser()
-      refetchDashboardData()
-      toast.success("Transaction added successfully!");
-      setIsOpen(false);
-     }
+      const res = await api.post("api/balance/add-balance", newData, {
+        withCredentials: true,
+      });
+      if (res.status === 201) {
+        refetchBalanceData();
+        refetchUser();
+        refetchDashboardData();
+        toast.success("Transaction added successfully!");
+        setIsOpen(false);
+      }
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         console.log(error);
         toast.error(error.response?.data?.error || "Creation failed!");
       } else {
@@ -218,7 +214,9 @@ export default function BalanceAddModal({
                       className="block w-full pl-10 pr-3 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
                     >
                       <option value="">Select category</option>
-                      {incomeCategories.length ===0 ? <option>Add Category From Settings</option> : (
+                      {incomeCategories.length === 0 ? (
+                        <option>Add Category From Settings</option>
+                      ) : (
                         incomeCategories.map((category) => (
                           <option key={category._id} value={category.name}>
                             {category.name}

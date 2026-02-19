@@ -13,7 +13,8 @@ import {
   Axis3DIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import api from "@/lib/axios";
+import { isAxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
@@ -41,7 +42,8 @@ export default function ExpenseAddModal({
   const { refetchUser } = useContext(UserContext)!;
   const { refetchTotalExpenseByMonthData, refetchExpenseData } =
     useContext(expenseContext)!;
-  const { refetchBudgetByMonthData , refetchBudgetData } = useContext(budgetContext)!;
+  const { refetchBudgetByMonthData, refetchBudgetData } =
+    useContext(budgetContext)!;
   const { expenseCategories } = useContext(CategoriesContext)!;
   const { refetchDashboardData } = useContext(DashboardContext)!;
 
@@ -59,13 +61,9 @@ export default function ExpenseAddModal({
     };
     console.log(newData);
     try {
-      const res = await axios.post(
-        "http://localhost:9000/api/expense/add-expense",
-        newData,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.post("api/expense/add-expense", newData, {
+        withCredentials: true,
+      });
       if (res.status === 201) {
         refetchBalanceData();
         refetchUser();
@@ -78,7 +76,7 @@ export default function ExpenseAddModal({
         setIsOpen(false);
       }
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         console.log(error);
         toast.error(error.response?.data?.message || "Creation failed!");
       } else {

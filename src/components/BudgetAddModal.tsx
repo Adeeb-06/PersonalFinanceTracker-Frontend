@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 import { X, DollarSign, Calendar } from "lucide-react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import api from "@/lib/axios";
+import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import budgetContext from "@/app/context/BudgetContext";
@@ -19,7 +20,7 @@ export default function BudgetAddModal({
   const { register, handleSubmit } = useForm<Budget>();
   const { data: session } = useSession();
 
-  const {refetchBudgetData} = useContext(budgetContext)!
+  const { refetchBudgetData } = useContext(budgetContext)!;
 
   const onSubmit = async (data: Budget) => {
     const newData = {
@@ -27,21 +28,15 @@ export default function BudgetAddModal({
       userEmail: session?.user?.email,
     };
     try {
-      const res = await axios.post(
-        "http://localhost:9000/api/budget/add-budget",
-        newData,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.post("api/budget/add-budget", newData);
 
       if (res.status === 201) {
         toast.success("Budget added successfully!");
         setIsOpen(false);
-        refetchBudgetData()
+        refetchBudgetData();
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         console.log(error);
         toast.error(error.response?.data?.message || "Creation failed!");
       } else {

@@ -13,7 +13,7 @@ import {
   ArrowDownLeft,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import axios from "axios";
+
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import { BalanceTableSkeleton } from "../Skeletons/BalanceTableSkeleton";

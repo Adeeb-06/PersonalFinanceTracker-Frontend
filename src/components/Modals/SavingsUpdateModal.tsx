@@ -1,9 +1,15 @@
 "use client";
 import savingsContext from "@/app/context/SavingsContext";
-import axios from "axios";
+import api from "@/lib/axios";
 import { Calendar, DollarSign, Target, X } from "lucide-react";
 import { useSession } from "next-auth/react";
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -16,14 +22,14 @@ type SavingsGoalInputs = {
 
 const SavingsUpdateModal = ({
   id,
-  setIsUpdateModalOpen
+  setIsUpdateModalOpen,
 }: {
-  id:string;
-  setIsUpdateModalOpen: Dispatch<SetStateAction<boolean>>; 
+  id: string;
+  setIsUpdateModalOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-
-  const {data:session} = useSession()
-  const {refetchSavingsData ,setSavingsId , savingsDataByID } = useContext(savingsContext)!
+  const { data: session } = useSession();
+  const { refetchSavingsData, setSavingsId, savingsDataByID } =
+    useContext(savingsContext)!;
   const {
     register,
     handleSubmit,
@@ -36,7 +42,9 @@ const SavingsUpdateModal = ({
     if (id) {
       setSavingsId(id);
     }
-    const deadline = new Date(savingsDataByID?.data?.deadline).toISOString().split('T')[0];
+    const deadline = new Date(savingsDataByID?.data?.deadline)
+      .toISOString()
+      .split("T")[0];
     reset({
       title: savingsDataByID?.data?.title,
       targetAmount: savingsDataByID?.data?.targetAmount,
@@ -44,20 +52,19 @@ const SavingsUpdateModal = ({
     });
   }, [id]);
 
-  console.log(savingsDataByID)
+  console.log(savingsDataByID);
 
   const onSubmit = async (data: SavingsGoalInputs) => {
     console.log(data);
     try {
-      const email = session?.user?.email
-      const res = await axios.put(
-        `http://localhost:9000/api/savings/update/${id}`,
-        {...data,email},
-        { withCredentials: true },
-      );
+      const email = session?.user?.email;
+      const res = await api.put(`/api/savings/update/${id}`, {
+        ...data,
+        email,
+      });
       toast.success(res.data.message);
       setIsUpdateModalOpen(false);
-      refetchSavingsData()
+      refetchSavingsData();
     } catch (error: any) {
       toast.error(error.response.data.message);
     }

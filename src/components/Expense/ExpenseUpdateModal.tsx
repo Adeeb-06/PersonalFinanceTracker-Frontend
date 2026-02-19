@@ -13,7 +13,8 @@ import {
   Axis3DIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import api from "@/lib/axios";
+import { isAxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
@@ -34,7 +35,7 @@ interface Balance {
 
 export default function ExpenseUpdateModal({
   setIsOpen,
-  expenseId
+  expenseId,
 }: {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   expenseId: string;
@@ -47,10 +48,10 @@ export default function ExpenseUpdateModal({
     expenseDataById,
     setExpenseId,
   } = useContext(expenseContext)!;
-  const { refetchBudgetByMonthData , refetchBudgetData } = useContext(budgetContext)!;
+  const { refetchBudgetByMonthData, refetchBudgetData } =
+    useContext(budgetContext)!;
   const { expenseCategories } = useContext(CategoriesContext)!;
   const { refetchDashboardData } = useContext(DashboardContext)!;
-
 
   useEffect(() => {
     if (expenseId) {
@@ -62,19 +63,19 @@ export default function ExpenseUpdateModal({
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm<Balance>();
   const { data: session } = useSession();
 
-  useEffect(()=>{
-        reset({
+  useEffect(() => {
+    reset({
       date: expenseDataById?.date.split("T")[0],
       time: expenseDataById?.time,
       amount: expenseDataById?.amount,
       category: expenseDataById?.category,
       description: expenseDataById?.description,
-    })
-  },[expenseDataById])
+    });
+  }, [expenseDataById]);
 
   const onSubmit = async (data: Balance) => {
     const newData = {
@@ -83,13 +84,9 @@ export default function ExpenseUpdateModal({
     };
     console.log(newData);
     try {
-      const res = await axios.put(
-        `http://localhost:9000/api/expense/update-expense/${expenseId}`,
-        newData,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.put(`api/expense/update-expense/${expenseId}`, newData, {
+        withCredentials: true,
+      });
       if (res.status === 201) {
         refetchBalanceData();
         refetchUser();
@@ -102,7 +99,7 @@ export default function ExpenseUpdateModal({
         setIsOpen(false);
       }
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         console.log(error);
         toast.error(error.message || "Updation failed!");
       } else {
@@ -111,7 +108,7 @@ export default function ExpenseUpdateModal({
     }
   };
 
-  console.log(expenseDataById)
+  console.log(expenseDataById);
 
   return (
     <>

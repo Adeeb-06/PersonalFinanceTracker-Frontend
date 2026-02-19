@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useState } from "react";
 import { AlertTriangle, Trash2, X } from "lucide-react";
-import axios from "axios";
+import api from "@/lib/axios";
 import { toast } from "react-toastify";
 import expenseContext from "@/app/context/ExpenseContext";
 import budgetContext from "@/app/context/BudgetContext";
@@ -27,7 +27,7 @@ export default function DeleteConfirmationModal({
     useContext(expenseContext)!;
   const { refetchBudgetByMonthData, refetchBudgetData } =
     useContext(budgetContext)!;
-    const {refetchBalanceData} = useContext(balanceContext)!
+  const { refetchBalanceData } = useContext(balanceContext)!;
   const { refetchUser } = useContext(UserContext)!;
 
   // Item details - pass these as props in real implementat
@@ -38,12 +38,7 @@ export default function DeleteConfirmationModal({
 
   const deleteTransaction = async (id: string, type: string) => {
     if (type === "expense") {
-      const res = await axios.delete(
-        `http://localhost:9000/api/expense/delete-expense/${id}`,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.delete(`/api/expense/delete-expense/${id}`);
       if (res.status === 200) {
         toast.success("Transaction deleted successfully");
         setIsOpen(false);
@@ -56,12 +51,7 @@ export default function DeleteConfirmationModal({
         toast.error("Failed to delete transaction");
       }
     } else {
-      const res = await axios.delete(
-        `http://localhost:9000/api/balance/delete-income/${id}`,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.delete(`/api/balance/delete-income/${id}`);
       if (res.status === 200) {
         toast.success("Transaction deleted successfully");
         setIsOpen(false);

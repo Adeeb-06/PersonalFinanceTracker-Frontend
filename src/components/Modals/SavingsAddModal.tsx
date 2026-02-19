@@ -1,6 +1,6 @@
 "use client";
 import savingsContext from "@/app/context/SavingsContext";
-import axios from "axios";
+import api from "@/lib/axios";
 import { Calendar, DollarSign, Target, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useContext, useState } from "react";
@@ -19,9 +19,8 @@ const SavingsAddModal = ({
 }: {
   setIsModalOpen: (value: boolean) => void;
 }) => {
-
-  const {data:session} = useSession()
-  const {refetchSavingsData} = useContext(savingsContext)!
+  const { data: session } = useSession();
+  const { refetchSavingsData } = useContext(savingsContext)!;
   const {
     register,
     handleSubmit,
@@ -31,15 +30,11 @@ const SavingsAddModal = ({
   const onSubmit = async (data: SavingsGoalInputs) => {
     console.log(data);
     try {
-      const email = session?.user?.email
-      const res = await axios.post(
-        "http://localhost:9000/api/savings/add",
-        {...data,email},
-        { withCredentials: true },
-      );
+      const email = session?.user?.email;
+      const res = await api.post("/api/savings/add", { ...data, email });
       toast.success(res.data.message);
       setIsModalOpen(false);
-      refetchSavingsData()
+      refetchSavingsData();
     } catch (error: any) {
       toast.error(error.response.data.message);
     }

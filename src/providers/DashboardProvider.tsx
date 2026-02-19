@@ -1,21 +1,18 @@
-"use client"
+"use client";
 import React, { useContext, useState } from "react";
 import DashboardContext from "../app/context/DashboardContext";
 import UserContext from "@/app/context/UserContext";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 
 const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   const { userData } = useContext(UserContext)!;
-    const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
+  const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
   const fetchDashboardData = async () => {
-    const response = await axios.get(
-      `http://localhost:9000/api/dashboard/report/${userData?.email}?month=${month}&year=${year}`,
-      {
-        withCredentials: true,
-      },
+    const response = await api.get(
+      `api/dashboard/report/${userData?.email}?month=${month}&year=${year}`,
     );
     return response.data;
   };
@@ -27,12 +24,10 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
     error: dashboardError,
     refetch: refetchDashboardData,
   } = useQuery({
-    queryKey: ["dashboardReport" , month , year],
+    queryKey: ["dashboardReport", month, year],
     queryFn: () => fetchDashboardData(),
     enabled: !!userData?.email && !!month && !!year,
   });
-
-
 
   return (
     <DashboardContext.Provider

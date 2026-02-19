@@ -1,5 +1,5 @@
 "use client";
-import axios from "axios";
+import api from "@/lib/axios";
 import { Plus, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import React, { useContext, useState } from "react";
 import { toast } from "react-toastify";
@@ -11,8 +11,8 @@ import expenseContext from "@/app/context/ExpenseContext";
 
 const AddCategories = () => {
   const { userData } = useContext(UserContext)!;
-  const {refetchBalanceData} = useContext(balanceContext)!
-  const {refetchExpenseData} = useContext(expenseContext)!
+  const { refetchBalanceData } = useContext(balanceContext)!;
+  const { refetchExpenseData } = useContext(expenseContext)!;
   const {
     incomeCategories,
     refetchIncomeCategories,
@@ -27,21 +27,15 @@ const AddCategories = () => {
   const addCategory = async (type: "income" | "expense") => {
     if (type === "income") {
       try {
-        const res = await axios.post(
-          "http://localhost:9000/api/categories/create-category",
-          {
-            name: newIncomeCat,
-            type: "income",
-            userEmail: userData?.email,
-          },
-          {
-            withCredentials: true,
-          },
-        );
+        const res = await api.post("api/categories/create-category", {
+          name: newIncomeCat,
+          type: "income",
+          userEmail: userData?.email,
+        });
         console.log(res);
         if (res.status === 201) {
-            refetchIncomeCategories()
-            refetchBalanceData()
+          refetchIncomeCategories();
+          refetchBalanceData();
           toast.success("Income category added");
         }
       } catch (error) {
@@ -50,50 +44,40 @@ const AddCategories = () => {
     } else {
       if (!newExpenseCat.trim()) return;
       try {
-        const res = await axios.post(
-          "http://localhost:9000/api/categories/create-category",
-          {
-            name: newExpenseCat,
-            type: "expense",
-            userEmail: userData?.email,
-          },
-          {
-            withCredentials: true,
-          },
-        );
-       if(res.status == 201){
-        refetchExpenseCategories()
-        refetchExpenseData()
-        toast.success("Expense category added");
-       }
+        const res = await api.post("api/categories/create-category", {
+          name: newExpenseCat,
+          type: "expense",
+          userEmail: userData?.email,
+        });
+        if (res.status == 201) {
+          refetchExpenseCategories();
+          refetchExpenseData();
+          toast.success("Expense category added");
+        }
       } catch (error) {
         toast.error("Failed to add category");
       }
     }
   };
 
-  const removeCategory = async(type: "income" | "expense", cat: string) => {
-     try{
-      const res = await axios.delete(
-        `http://localhost:9000/api/categories/${cat}`,
-        {
-          withCredentials: true,
-        },
-      );
+  const removeCategory = async (type: "income" | "expense", cat: string) => {
+    try {
+      const res = await api.delete(`api/categories/${cat}` , {
+        withCredentials:true
+      });
       console.log(res);
       if (res.status === 200) {
         if (type === "income") {
-          
           refetchIncomeCategories();
         } else {
           refetchExpenseCategories();
         }
         toast.info("Category removed");
       }
-     }catch(error:any){
+    } catch (error: any) {
       console.log(error);
       toast.error(error.response.data.message || "Failed to remove category");
-     }
+    }
   };
   return (
     <div className="grid md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">

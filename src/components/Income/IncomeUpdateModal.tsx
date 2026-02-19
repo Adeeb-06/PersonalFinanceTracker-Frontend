@@ -13,7 +13,8 @@ import {
   Axis3DIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import api from "@/lib/axios";
+import { isAxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
@@ -22,6 +23,7 @@ import expenseContext from "@/app/context/ExpenseContext";
 import budgetContext from "@/app/context/BudgetContext";
 import CategoriesContext from "@/app/context/CategoriesContext";
 import DashboardContext from "@/app/context/DashboardContext";
+
 
 interface Balance {
   date: string;
@@ -34,7 +36,7 @@ interface Balance {
 
 export default function IncomeUpdateModal({
   setIsOpen,
-  incomeId
+  incomeId,
 }: {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   incomeId: string;
@@ -47,11 +49,10 @@ export default function IncomeUpdateModal({
     refetchIncomeDataById,
     isIncomeDataByIdLoading,
   } = useContext(balanceContext)!;
-  const { refetchBudgetByMonthData , refetchBudgetData } = useContext(budgetContext)!;
+  const { refetchBudgetByMonthData, refetchBudgetData } =
+    useContext(budgetContext)!;
   const { incomeCategories } = useContext(CategoriesContext)!;
   const { refetchDashboardData } = useContext(DashboardContext)!;
-
-
 
   useEffect(() => {
     if (incomeId) {
@@ -63,19 +64,19 @@ export default function IncomeUpdateModal({
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm<Balance>();
   const { data: session } = useSession();
 
-  useEffect(()=>{
-        reset({
+  useEffect(() => {
+    reset({
       date: incomeDataById?.date?.split("T")[0],
       time: incomeDataById?.time,
       amount: incomeDataById?.amount,
       category: incomeDataById?.category,
       description: incomeDataById?.description,
-    })
-  },[ incomeDataById])
+    });
+  }, [incomeDataById]);
 
   const onSubmit = async (data: Balance) => {
     const newData = {
@@ -84,13 +85,9 @@ export default function IncomeUpdateModal({
     };
     console.log(newData);
     try {
-      const res = await axios.put(
-        `http://localhost:9000/api/balance/update-income/${incomeId}`,
-        newData,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.put(`api/balance/update-income/${incomeId}`, newData, {
+        withCredentials: true,
+      });
       if (res.status === 200) {
         refetchBalanceData();
         refetchUser();
@@ -101,7 +98,7 @@ export default function IncomeUpdateModal({
         setIsOpen(false);
       }
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         console.log(error);
         toast.error(error.message || "Updation failed!");
       } else {
@@ -109,8 +106,6 @@ export default function IncomeUpdateModal({
       }
     }
   };
-
-
 
   return (
     <>

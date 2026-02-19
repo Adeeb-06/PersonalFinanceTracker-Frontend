@@ -12,7 +12,7 @@ import {
   Edit2,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import axios from "axios";
+import api from "@/lib/axios";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import { BalanceTableSkeleton } from "../Skeletons/BalanceTableSkeleton";
@@ -44,8 +44,6 @@ export default function IncomeTable() {
   const [id, setId] = useState<string>("");
   const { data: session, status } = useSession();
 
-
-
   const {
     balanceData,
     setStartDate,
@@ -59,7 +57,6 @@ export default function IncomeTable() {
     search,
     setSearch,
   } = useContext(balanceContext)!;
-
 
   const pagination = balanceData?.pagination || null;
 

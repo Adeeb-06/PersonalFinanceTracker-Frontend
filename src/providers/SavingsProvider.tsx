@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import savingsContext from "@/app/context/SavingsContext";
 import { useSession } from "next-auth/react";
-import axios from "axios";
+import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 
 const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
@@ -11,12 +11,7 @@ const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchSavings = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:9000/api/savings/get/${session?.user?.email}`,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.get(`api/savings/get/${session?.user?.email}`);
       return res.data;
     } catch (error: any) {
       console.log(error);
@@ -26,13 +21,10 @@ const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchSavingsByID = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:9000/api/savings/get/${savingsId}/${session?.user?.email}`,
-        {
-          withCredentials: true,
-        },
+      const res = await api.get(
+        `/api/savings/get/${savingsId}/${session?.user?.email}`,
       );
-      console.log(res)
+      console.log(res);
       return res.data;
     } catch (error: any) {
       console.log(error);

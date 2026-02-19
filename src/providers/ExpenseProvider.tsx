@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import expenseContext from "@/app/context/ExpenseContext";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import { useSession } from "next-auth/react";
 
 interface Props {
@@ -40,11 +40,10 @@ const ExpenseProvider = ({ children }: Props) => {
       if (startDate) params.from = startDate;
       if (endDate) params.to = endDate;
 
-      const res = await axios.get(
-        `http://localhost:9000/api/expense/get-expense/${session?.user?.email}`,
+      const res = await api.get(
+        `/api/expense/get-expense/${session?.user?.email}`,
         {
           params,
-          withCredentials: true,
         },
       );
       return res.data;
@@ -58,11 +57,8 @@ const ExpenseProvider = ({ children }: Props) => {
   const fetchTotalExpenseByMonth = async () => {
     if (!monthExpense || !year) return { total: 0 };
     try {
-      const res = await axios.get(
-        `http://localhost:9000/api/expense/get-total-expense-by-month/${session?.user?.email}?month=${monthExpense}&year=${year}`,
-        {
-          withCredentials: true,
-        },
+      const res = await api.get(
+        `/api/expense/get-total-expense-by-month/${session?.user?.email}?month=${monthExpense}&year=${year}`,
       );
       console.log(res.data);
       return res.data;
@@ -109,11 +105,8 @@ const ExpenseProvider = ({ children }: Props) => {
 
   const fetchExpenseById = async (id: string) => {
     try {
-      const res = await axios.get(
-        `http://localhost:9000/api/expense/get-expense-by-id/${expenseId}`,
-        {
-          withCredentials: true,
-        },
+      const res = await api.get(
+        `/api/expense/get-expense-by-id/${expenseId}`,
       );
       return res.data;
     } catch (error) {

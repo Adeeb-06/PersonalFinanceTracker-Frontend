@@ -1,7 +1,7 @@
 "use client";
 import balanceContext from "@/app/context/BalanceContext";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -17,7 +17,7 @@ const BalanceProvider = ({ children }: Props) => {
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [incomeId, setIncomeId] = useState<string>("");
-  const [debounceSearch , setDebounceSearch] = useState("")
+  const [debounceSearch, setDebounceSearch] = useState("");
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const BalanceProvider = ({ children }: Props) => {
       const params: any = {
         page,
         limit: 10,
-        search:debounceSearch,
+        search: debounceSearch,
       };
 
       console.log(startDate, endDate);
@@ -40,11 +40,10 @@ const BalanceProvider = ({ children }: Props) => {
       if (startDate) params.from = startDate;
       if (endDate) params.to = endDate;
 
-      const res = await axios.get(
-        `http://localhost:9000/api/balance/get-income-data/${session?.user?.email}`,
+      const res = await api.get(
+        `api/balance/get-income-data/${session?.user?.email}`,
         {
           params,
-          withCredentials: true,
         },
       );
 
@@ -57,12 +56,7 @@ const BalanceProvider = ({ children }: Props) => {
 
   const fetchIncomeDataById = async (incomeId: string) => {
     try {
-      const res = await axios.get(
-        `http://localhost:9000/api/balance/get-income-by-id/${incomeId}`,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.get(`api/balance/get-income-by-id/${incomeId}`);
       console.log(res, "income prov");
       return res.data;
     } catch (error) {

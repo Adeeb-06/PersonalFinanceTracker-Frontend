@@ -1,7 +1,7 @@
 "use client";
 import CategoriesContext from "@/app/context/CategoriesContext";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 
@@ -21,22 +21,16 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
 
   const fetchIncomeCategories = async () => {
     if (!session?.user?.email) return [];
-    const res = await axios.get(
-      `http://localhost:9000/api/categories/income/${session.user.email}`,
-      {
-        withCredentials: true,
-      },
+    const res = await api.get(
+      `api/categories/income/${session.user.email}`
     );
     return res.data.data;
   };
 
   const fetchExpenseCategories = async () => {
     if (!session?.user?.email) return [];
-    const res = await axios.get(
-      `http://localhost:9000/api/categories/expense/${session.user.email}`,
-      {
-        withCredentials: true,
-      },
+    const res = await api.get(
+      `api/categories/expense/${session.user.email}`
     );
     return res.data.data;
   };
@@ -47,11 +41,8 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     year: number,
   ) => {
     if (!session?.user?.email) return [];
-    const res = await axios.get(
-      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${category}&month=${month}&year=${year}`,
-      {
-        withCredentials: true,
-      },
+    const res = await api.get(
+      `api/categories/analytics/${session.user.email}?category=${category}&month=${month}&year=${year}`
     );
     return res.data;
   };
@@ -62,11 +53,8 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     year: number,
   ) => {
     if (!session?.user?.email) return [];
-    const res = await axios.get(
-      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${expenseCategory}&month=${expenseMonth}&year=${expenseYear}`,
-      {
-        withCredentials: true,
-      },
+    const res = await api.get(
+      `api/categories/analytics/${session.user.email}?category=${expenseCategory}&month=${expenseMonth}&year=${expenseYear}`
     );
     console.log(res);
     return res.data;
@@ -78,11 +66,8 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     year: number,
   ) => {
     if (!session?.user?.email) return [];
-    const res = await axios.get(
-      `http://localhost:9000/api/categories/analytics/${session.user.email}?category=${incomeCategory}&month=${incomeMonth}&year=${incomeYear}`,
-      {
-        withCredentials: true,
-      },
+    const res = await api.get(
+      `api/categories/analytics/${session.user.email}?category=${incomeCategory}&month=${incomeMonth}&year=${incomeYear}`
     );
     return res.data;
   };

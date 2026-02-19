@@ -2,7 +2,7 @@
 import React, { useContext, useState } from "react";
 import { X, DollarSign } from "lucide-react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import api from "@/lib/axios";
 import { toast } from "react-toastify";
 import savingsContext from "@/app/context/SavingsContext";
 
@@ -27,9 +27,7 @@ const AddMoneyModal = ({
   currentAmount,
   targetAmount,
 }: AddMoneyModalProps) => {
-
-
-  const {refetchSavingsData} =  useContext(savingsContext)!
+  const { refetchSavingsData } = useContext(savingsContext)!;
   const {
     register,
     handleSubmit,
@@ -39,18 +37,14 @@ const AddMoneyModal = ({
 
   const onSubmit = async (data: AddMoneyForm) => {
     try {
-      const res = await axios.put(
-        `http://localhost:9000/api/savings/add-money/${savingsId}`,
-        { amount: Number(data.amount) },
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await api.put(`api/savings/add-money/${savingsId}`, {
+        amount: Number(data.amount),
+      });
 
       if (res.status === 200) {
         toast.success("Money added successfully!");
         reset();
-        refetchSavingsData()
+        refetchSavingsData();
         onClose();
       }
     } catch (error: any) {
@@ -119,10 +113,10 @@ const AddMoneyModal = ({
                       value: 0.01,
                       message: "Amount must be greater than 0",
                     },
-                    max:{
-                      value:targetAmount-currentAmount,
-                      message:`Amount must be less than or equal to ${targetAmount-currentAmount}`
-                    }
+                    max: {
+                      value: targetAmount - currentAmount,
+                      message: `Amount must be less than or equal to ${targetAmount - currentAmount}`,
+                    },
                   })}
                   className="block w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
                 />
