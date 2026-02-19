@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import NextAuth, { Account, AuthOptions, Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
+import jwt from "jsonwebtoken";
 
 import Google from "next-auth/providers/google";
 
@@ -84,15 +85,19 @@ export const authOptions: AuthOptions = {
         token.email = user.email;
         token.id = user.id;
         token.balance = user.balance;
+        token.accessToken = jwt.sign(
+          { id: user.id, email: user.email },
+          process.env.NEXTAUTH_SECRET!,
+          { expiresIn: "1d" }
+        );
       }
-      if(account){
-        token.accessToken = account.access_token;
-      }
+      
 
       if (account?.provider === "google" && user) {
         const res = await api.get(`api/users/${user.email}`);
 
         token.balance = res.data.balance;
+        token.accessToken = account.access_token;
       }
 
       return token;
