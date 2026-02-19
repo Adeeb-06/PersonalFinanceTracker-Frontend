@@ -3,6 +3,7 @@ import { getSession } from "next-auth/react";
 
 const api = axios.create({
   baseURL: "https://trackitbackend-two.vercel.app/",
+  withCredentials: true,
 });
 
 api.interceptors.request.use(async (config) => {
