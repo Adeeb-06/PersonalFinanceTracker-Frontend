@@ -50,20 +50,29 @@ export const authOptions: AuthOptions = {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      
     }),
   ],
 
   session: {
     strategy: "jwt",
   },
+  cookies: {
+    sessionToken: {
+      name: "__Secure-next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "none", // must be 'none' for cross-domain
+        secure: true,
+        domain: "trackitbackend-two.vercel.app", // cookie must be sent to backend
+      },
+    },
+  },
+
   callbacks: {
     async signIn({ user, account }) {
       try {
         if (account?.provider === "google") {
-          const { data } = await api.get(
-            `api/users/${user.email}/exists`,
-          );
+          const { data } = await api.get(`api/users/${user.email}/exists`);
 
           if (data.exists === false) {
             await api.post(`api/users/register`, {
@@ -89,10 +98,9 @@ export const authOptions: AuthOptions = {
         token.accessToken = jwt.sign(
           { id: user.id, email: user.email },
           process.env.NEXTAUTH_SECRET!,
-          { expiresIn: "1d" }
+          { expiresIn: "1d" },
         );
       }
-      
 
       if (account?.provider === "google" && user) {
         const res = await api.get(`api/users/${user.email}`);
