@@ -7,6 +7,7 @@ declare module "next-auth" {
       id: string;
       balance: number;
     } & DefaultSession["user"];
+    accessToken: JWT;
   }
 
   interface User {

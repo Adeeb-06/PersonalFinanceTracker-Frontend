@@ -100,6 +100,7 @@ export const authOptions: AuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.balance = token.balance as number;
+        session.accessToken = token;
       }
       return session;
     },
