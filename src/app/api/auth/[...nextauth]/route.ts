@@ -6,6 +6,7 @@ import Credentials from "next-auth/providers/credentials";
 import jwt from "jsonwebtoken";
 
 import Google from "next-auth/providers/google";
+import axios from "axios";
 
 interface BackendUser {
   id: string;
@@ -26,7 +27,7 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         const { email, password } = credentials as unknown as BackendUser;
 
-        const res = await api.get(`api/users/${email}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${email}`);
         console.log(res.data);
         const user = res.data;
 
@@ -72,10 +73,10 @@ export const authOptions: AuthOptions = {
     async signIn({ user, account }) {
       try {
         if (account?.provider === "google") {
-          const { data } = await api.get(`api/users/${user.email}/exists`);
+          const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${user.email}/exists`);
 
           if (data.exists === false) {
-            await api.post(`api/users/register`, {
+            await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/register`, {
               username: user.name,
               email: user.email,
               password: "google_oauth_no_password",
@@ -103,7 +104,7 @@ export const authOptions: AuthOptions = {
       }
 
       if (account?.provider === "google" && user) {
-        const res = await api.get(`api/users/${user.email}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${user.email}`);
 
         token.balance = res.data.balance;
         token.accessToken = account.access_token;
