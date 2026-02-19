@@ -25,8 +25,9 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         const { email, password } = credentials as unknown as BackendUser;
 
-        const res = await api.get("api/users");
-        const user = res.data.find((u: BackendUser) => u.email === email);
+        const res = await api.get(`api/users/${email}`);
+        console.log(res.data);
+        const user = res.data;
 
         if (!user) {
           throw new Error("No User Found with the Email");
@@ -48,13 +49,13 @@ export const authOptions: AuthOptions = {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      checks: ["none"],
     }),
   ],
 
   session: {
     strategy: "jwt",
   },
-
   callbacks: {
     async signIn({ user, account }) {
       try {
