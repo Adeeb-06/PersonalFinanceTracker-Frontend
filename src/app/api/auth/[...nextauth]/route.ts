@@ -85,6 +85,9 @@ export const authOptions: AuthOptions = {
         token.id = user.id;
         token.balance = user.balance;
       }
+      if(account){
+        token.accessToken = account.access_token;
+      }
 
       if (account?.provider === "google" && user) {
         const res = await api.get(`api/users/${user.email}`);
@@ -100,7 +103,7 @@ export const authOptions: AuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.balance = token.balance as number;
-        session.accessToken = token;
+        session.accessToken = token.accessToken as string;
       }
       return session;
     },
