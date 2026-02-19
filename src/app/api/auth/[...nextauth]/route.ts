@@ -61,11 +61,11 @@ export const authOptions: AuthOptions = {
     async signIn({ user, account }) {
       try {
         if (account?.provider === "google") {
-          const { data: exists } = await api.get(
+          const { data } = await api.get(
             `api/users/${user.email}/exists`,
           );
 
-          if (!exists) {
+          if (!data.exists) {
             await api.post(`api/users/register`, {
               username: user.name,
               email: user.email,

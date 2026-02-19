@@ -7,7 +7,7 @@ const privateRoutes = [
 ]
  
 export async function proxy(req: NextRequest) {
-    const token = await getToken({ req })
+    const token = await getToken({ req , secret: process.env.NEXTAUTH_SECRET })
     const isAuthenticated = !!token
     const { pathname } = req.nextUrl
     
