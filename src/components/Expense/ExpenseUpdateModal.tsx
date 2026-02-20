@@ -15,7 +15,7 @@ import {
 import { useForm } from "react-hook-form";
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
 import UserContext from "@/app/context/UserContext";
@@ -65,7 +65,7 @@ export default function ExpenseUpdateModal({
     formState: { errors },
     reset,
   } = useForm<Balance>();
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
 
   useEffect(() => {
     reset({
@@ -80,13 +80,17 @@ export default function ExpenseUpdateModal({
   const onSubmit = async (data: Balance) => {
     const newData = {
       ...data,
-      userEmail: session?.user?.email,
+      userEmail: firebaseUser?.email,
     };
     console.log(newData);
     try {
-      const res = await api.put(`api/expense/update-expense/${expenseId}`, newData, {
-        withCredentials: true,
-      });
+      const res = await api.put(
+        `api/expense/update-expense/${expenseId}`,
+        newData,
+        {
+          withCredentials: true,
+        },
+      );
       if (res.status === 201) {
         refetchBalanceData();
         refetchUser();

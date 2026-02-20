@@ -2,7 +2,7 @@
 import CategoriesContext from "@/app/context/CategoriesContext";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
-import { useSession } from "next-auth/react";
+import { useAuth } from "./FirebaseAuthProvider";
 import React, { useState } from "react";
 
 interface CategoryProviderProps {
@@ -10,7 +10,7 @@ interface CategoryProviderProps {
 }
 
 const CategoryProvider = ({ children }: CategoryProviderProps) => {
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
   const [expenseMonth, setExpenseMonth] = useState<number>();
   const [expenseYear, setExpenseYear] = useState<number>();
   const [incomeMonth, setIncomeMonth] = useState<number>();
@@ -20,16 +20,16 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
   const [incomeCategory, setIncomeCategory] = useState<string>();
 
   const fetchIncomeCategories = async () => {
-    if (!session?.user?.email) return [];
-    const res = await api.get(`api/categories/income/${session.user.email}`, {
+    if (!firebaseUser?.email) return [];
+    const res = await api.get(`api/categories/income/${firebaseUser.email}`, {
       withCredentials: true,
     });
     return res.data.data;
   };
 
   const fetchExpenseCategories = async () => {
-    if (!session?.user?.email) return [];
-    const res = await api.get(`api/categories/expense/${session.user.email}`, {
+    if (!firebaseUser?.email) return [];
+    const res = await api.get(`api/categories/expense/${firebaseUser.email}`, {
       withCredentials: true,
     });
     return res.data.data;
@@ -40,9 +40,9 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     month: number,
     year: number,
   ) => {
-    if (!session?.user?.email) return [];
+    if (!firebaseUser?.email) return [];
     const res = await api.get(
-      `api/categories/analytics/${session.user.email}?category=${category}&month=${month}&year=${year}`,
+      `api/categories/analytics/${firebaseUser.email}?category=${category}&month=${month}&year=${year}`,
       { withCredentials: true },
     );
     return res.data;
@@ -53,9 +53,9 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     month: number,
     year: number,
   ) => {
-    if (!session?.user?.email) return [];
+    if (!firebaseUser?.email) return [];
     const res = await api.get(
-      `api/categories/analytics/${session.user.email}?category=${expenseCategory}&month=${expenseMonth}&year=${expenseYear}`,
+      `api/categories/analytics/${firebaseUser.email}?category=${expenseCategory}&month=${expenseMonth}&year=${expenseYear}`,
       { withCredentials: true },
     );
     console.log(res);
@@ -67,9 +67,9 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     month: number,
     year: number,
   ) => {
-    if (!session?.user?.email) return [];
+    if (!firebaseUser?.email) return [];
     const res = await api.get(
-      `api/categories/analytics/${session.user.email}?category=${incomeCategory}&month=${incomeMonth}&year=${incomeYear}`,
+      `api/categories/analytics/${firebaseUser.email}?category=${incomeCategory}&month=${incomeMonth}&year=${incomeYear}`,
       { withCredentials: true },
     );
     return res.data;
@@ -81,9 +81,9 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     refetch: refetchIncomeCategories,
     error: incomeCategoriesError,
   } = useQuery({
-    queryKey: ["incomeCategories", session?.user?.email],
+    queryKey: ["incomeCategories", firebaseUser?.email],
     queryFn: fetchIncomeCategories,
-    enabled: !!session?.user?.email,
+    enabled: !!firebaseUser?.email,
   });
 
   const {
@@ -92,9 +92,9 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     refetch: refetchExpenseCategories,
     error: expenseCategoriesError,
   } = useQuery({
-    queryKey: ["expenseCategories", session?.user?.email],
+    queryKey: ["expenseCategories", firebaseUser?.email],
     queryFn: fetchExpenseCategories,
-    enabled: !!session?.user?.email,
+    enabled: !!firebaseUser?.email,
   });
 
   const {
@@ -105,7 +105,7 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
   } = useQuery({
     queryKey: [
       "expenseCategoryAnalytics",
-      session?.user?.email,
+      firebaseUser?.email,
       expenseMonth,
       expenseYear,
       expenseCategory,
@@ -117,7 +117,7 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
         expenseYear!,
       ),
     enabled:
-      !!session?.user?.email &&
+      !!firebaseUser?.email &&
       !!expenseMonth &&
       !!expenseYear &&
       !!expenseCategory,
@@ -131,7 +131,7 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
   } = useQuery({
     queryKey: [
       "incomeCategoryAnalytics",
-      session?.user?.email,
+      firebaseUser?.email,
       incomeMonth,
       incomeYear,
       incomeCategory,
@@ -139,7 +139,7 @@ const CategoryProvider = ({ children }: CategoryProviderProps) => {
     queryFn: () =>
       fetchIncomeCategoryAnalytics(incomeCategory!, incomeMonth!, incomeYear!),
     enabled:
-      !!session?.user?.email &&
+      !!firebaseUser?.email &&
       !!incomeMonth &&
       !!incomeYear &&
       !!incomeCategory,

@@ -1,21 +1,20 @@
 "use client";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode } from "react";
 import UserContext from "@/app/context/UserContext";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
-import { toast } from "react-toastify";
+import { useAuth } from "./FirebaseAuthProvider";
 
 interface Props {
   children: ReactNode;
 }
 
 const UserProvider = ({ children }: Props) => {
-  const { data: session } = useSession();
+  const { firebaseUser, authLoading } = useAuth();
 
   const fetchUserData = async () => {
     try {
-      const res = await api.get(`api/users/${session?.user.email}`, {
+      const res = await api.get(`api/users/${firebaseUser?.email}`, {
         withCredentials: true,
       });
       return res.data;
@@ -30,9 +29,9 @@ const UserProvider = ({ children }: Props) => {
     refetch: refetchUser,
     error: userError,
   } = useQuery({
-    queryKey: ["userData", session?.user],
+    queryKey: ["userData", firebaseUser?.email],
     queryFn: () => fetchUserData(),
-    enabled: !!session?.user,
+    enabled: !!firebaseUser?.email && !authLoading,
   });
 
   const data = {

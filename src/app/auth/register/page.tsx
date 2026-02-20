@@ -3,11 +3,21 @@ import React, { useState } from "react";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
-import api from "@/lib/axios";
-import { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { signIn } from "next-auth/react";
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import api from "@/lib/axios";
+
+// Sets a cookie so the Edge middleware can detect Firebase auth state
+const setAuthCookie = () => {
+  document.cookie = "firebase-auth=true; path=/; max-age=86400; SameSite=Lax";
+};
 
 interface FormData {
   username: string;
@@ -17,6 +27,7 @@ interface FormData {
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const {
@@ -26,27 +37,73 @@ export default function RegisterForm() {
   } = useForm<FormData>();
 
   const onsubmit: SubmitHandler<FormData> = async (data: FormData) => {
+    setLoading(true);
     try {
-      const res = await api.post("api/users/register", data, {
-        withCredentials: true,
+      // 1. Create Firebase user
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password,
+      );
+      const firebaseUser = userCred.user;
+
+      // 2. Update display name in Firebase
+      await updateProfile(firebaseUser, { displayName: data.username });
+
+      // 3. Get ID token and store user in MongoDB
+      await api.post("api/users/register", {
+        username: data.username,
+        email: data.email,
+        firebaseUid: firebaseUser.uid,
       });
-      if (res.status === 201) {
-        router.push("/auth/login");
-        toast.success("Registered Successfully! Please Login.");
+
+      setAuthCookie();
+      toast.success("Registered successfully! Welcome aboard.");
+      router.push("/dashboard");
+    } catch (error: any) {
+      const msg =
+        error.code === "auth/email-already-in-use"
+          ? "This email is already registered"
+          : error.code === "auth/weak-password"
+            ? "Password is too weak (min 6 characters)"
+            : error.response?.data?.message || "Registration failed!";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Upsert user in MongoDB (non-blocking — don't fail the whole login if this fails)
+      try {
+        await api.post("api/users/upsert", {
+          username: user.displayName,
+          email: user.email,
+          firebaseUid: user.uid,
+        });
+      } catch (upsertError) {
+        console.error("Upsert failed (non-critical):", upsertError);
       }
-      console.log(res);
-    } catch (error: unknown) {
-      if (isAxiosError(error)) {
-        console.log(error);
-        toast.error(error.response?.data?.message || "Registration failed!");
-      } else {
-        toast.error("Something went wrong. Please try again.");
-      }
+
+      setAuthCookie();
+      toast.success("Registered successfully!");
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast.error("Google sign-up failed. Please try again.");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen  flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="relative max-w-md w-full">
         {/* Soft background glow */}
         <div className="absolute -inset-1 rounded-3xl bg-[#273F4F]/20 blur-xl"></div>
@@ -65,8 +122,9 @@ export default function RegisterForm() {
 
           {/* Google Button */}
           <button
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="w-full flex items-center justify-center gap-3 py-3 bg-white text-[#273F4F] font-semibold rounded-xl hover:scale-[1.02] active:scale-100 transition-all mb-6 shadow"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 py-3 bg-white text-[#273F4F] font-semibold rounded-xl hover:scale-[1.02] active:scale-100 transition-all mb-6 shadow disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -101,8 +159,6 @@ export default function RegisterForm() {
           {/* Form */}
           <form onSubmit={handleSubmit(onsubmit)}>
             <div className="space-y-5">
-              {/* Input wrapper */}
-
               <div>
                 <label className="block text-sm text-white/80 mb-2">
                   Full Name
@@ -113,7 +169,7 @@ export default function RegisterForm() {
                     type="text"
                     placeholder="John Doe"
                     {...register("username", {
-                      required: "User name is required",
+                      required: "Name is required",
                     })}
                     className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/40 border border-white/10 focus:border-white/30 focus:ring-2 focus:ring-white/10 outline-none transition"
                   />
@@ -129,7 +185,7 @@ export default function RegisterForm() {
                     type="text"
                     placeholder="john@example.com"
                     {...register("email", { required: "Email is required" })}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/40 border border-white/10 focus:border-white/30 focus:ring-2  outline-none transition"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/40 border border-white/10 focus:border-white/30 focus:ring-2 outline-none transition"
                   />
                 </div>
               </div>
@@ -147,7 +203,7 @@ export default function RegisterForm() {
                     {...register("password", {
                       required: "Password is required",
                       minLength: {
-                        value: 3,
+                        value: 6,
                         message: "Password must be at least 6 characters",
                       },
                     })}
@@ -166,9 +222,10 @@ export default function RegisterForm() {
               {/* CTA */}
               <button
                 type="submit"
-                className="w-full cursor-pointer py-3 rounded-xl bg-white text-[#273F4F] font-bold hover:scale-[1.02] active:scale-100 transition-all shadow-lg"
+                disabled={loading}
+                className="w-full cursor-pointer py-3 rounded-xl bg-white text-[#273F4F] font-bold hover:scale-[1.02] active:scale-100 transition-all shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Create Account
+                {loading ? "Creating account..." : "Create Account"}
               </button>
 
               {Object.keys(errors).length > 0 && (

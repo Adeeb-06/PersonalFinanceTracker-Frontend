@@ -15,7 +15,7 @@ import {
 import { useForm } from "react-hook-form";
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
 import UserContext from "@/app/context/UserContext";
@@ -49,12 +49,12 @@ export default function BalanceAddModal({
     handleSubmit,
     formState: { errors },
   } = useForm<Balance>();
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
 
   const onSubmit = async (data: Balance) => {
     const newData = {
       ...data,
-      userEmail: session?.user?.email,
+      userEmail: firebaseUser?.email,
     };
     console.log(newData);
     try {
@@ -82,7 +82,7 @@ export default function BalanceAddModal({
     <>
       <div className="fixed inset-0  bg-opacity-75 backdrop-blur-sm z-50 flex items-center justify-center ">
         {/* Modal Container */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 w-full max-w-2xl shadow-2xl transform transition-all">
+        <div className="bg-secondary border border-gray-800 rounded-2xl p-4 w-full max-w-2xl shadow-2xl transform transition-all">
           {/* Modal Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-800">
             <div>
@@ -100,21 +100,6 @@ export default function BalanceAddModal({
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="p-3">
-              {/* Transaction Type Toggle */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-white mb-3">
-                  Transaction Type
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    className={`flex items-center justify-center gap-2 px-6 py-2 rounded-xl font-semibold transition-all duration-200 
-                    bg-green-500 bg-opacity-20 text-white border-2 border-green-500`}
-                  >
-                    <TrendingUp className="w-4 h-4" />
-                    Income
-                  </button>
-                </div>
-              </div>
 
               {/* Form Fields Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

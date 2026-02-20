@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 import budgetContext from "@/app/context/BudgetContext";
 
 interface Budget {
@@ -18,14 +18,14 @@ export default function BudgetAddModal({
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { register, handleSubmit } = useForm<Budget>();
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
 
   const { refetchBudgetData } = useContext(budgetContext)!;
 
   const onSubmit = async (data: Budget) => {
     const newData = {
       ...data,
-      userEmail: session?.user?.email,
+      userEmail: firebaseUser?.email,
     };
     try {
       const res = await api.post("api/budget/add-budget", newData, {

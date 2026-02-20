@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Plus, TrendingUp, Calendar, Clock, Eye, EyeOff } from "lucide-react";
 import BalanceAddModal from "./BalanceAddModal";
-import { useSession } from "next-auth/react";
 import UserContext from "@/app/context/UserContext";
 
 export default function BalanceCard() {
@@ -38,8 +37,7 @@ export default function BalanceCard() {
   };
 
   const handleAddBalance = () => {
-    setIsOpen(true); 
-    
+    setIsOpen(true);
   };
 
   return (

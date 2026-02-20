@@ -11,7 +11,7 @@ import {
   XIcon,
   Edit2,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 import api from "@/lib/axios";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
@@ -42,7 +42,7 @@ export default function IncomeTable() {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [name, setName] = useState("");
   const [id, setId] = useState<string>("");
-  const { data: session, status } = useSession();
+  const { firebaseUser, authLoading } = useAuth();
 
   const {
     balanceData,
@@ -65,9 +65,7 @@ export default function IncomeTable() {
   const transactions = balanceData?.data ?? [];
 
   const showSkeleton =
-    isBalanceLoading ||
-    status === "loading" ||
-    (status === "authenticated" && !balanceData);
+    isBalanceLoading || authLoading || (!!firebaseUser && !balanceData);
 
   const handleDateFilter = () => {
     refetchBalanceData();

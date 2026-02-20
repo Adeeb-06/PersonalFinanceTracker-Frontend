@@ -21,12 +21,21 @@ import Link from "next/link";
 import Logo from "./Logo";
 import { usePathname } from "next/navigation";
 import UserContext from "@/app/context/UserContext";
-import { signOut } from "next-auth/react";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const { userData } = useContext(UserContext)!;
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    document.cookie = "firebase-auth=; path=/; max-age=0";
+    router.push("/auth/login");
+  };
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -122,7 +131,7 @@ export default function Sidebar() {
         </div>
         <div className="flex items-center mt-3 space-x-3">
           <button
-            onClick={() => signOut()}
+            onClick={handleLogout}
             className="btn btn-sm btn-primary text-secondary"
           >
             <User className="w-3 h-3" />

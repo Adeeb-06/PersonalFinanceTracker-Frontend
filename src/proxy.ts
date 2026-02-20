@@ -7,18 +7,22 @@ const privateRoutes = [
 ]
  
 export async function proxy(req: NextRequest) {
-    const token = await getToken({ req , secret: process.env.NEXTAUTH_SECRET })
-    const isAuthenticated = !!token
-    const { pathname } = req.nextUrl
-    
-    const isPrivate = privateRoutes.some((route) => pathname.startsWith(route))
-
-    if(isPrivate && !isAuthenticated){
-        const loginUrl = new URL('/auth/login', req.url)
-        loginUrl.searchParams.set('callbackUrl', pathname)
-        return NextResponse.redirect(loginUrl)
+    const { pathname } = req.nextUrl;
+  
+    const isPrivate = privateRoutes.some((route) => pathname.startsWith(route));
+  
+    if (isPrivate) {
+      // Firebase stores auth in IndexedDB, not accessible in Edge middleware.
+      // We rely on a lightweight "firebase-auth" cookie set after login.
+      const authCookie = req.cookies.get("firebase-auth");
+  
+      if (!authCookie?.value) {
+        const loginUrl = new URL("/auth/login", req.url);
+        loginUrl.searchParams.set("callbackUrl", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
     }
-
+  
     return NextResponse.next()
 }
  

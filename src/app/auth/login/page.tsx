@@ -1,21 +1,31 @@
 "use client";
 import React, { useState } from "react";
-import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { signIn } from "next-auth/react";
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import api from "@/lib/axios";
+
+// Sets a cookie so the Edge middleware can detect Firebase auth state
+const setAuthCookie = () => {
+  document.cookie = "firebase-auth=true; path=/; max-age=86400; SameSite=Lax";
+};
 
 interface FormData {
-  username: string;
   email: string;
   password: string;
 }
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const {
@@ -25,27 +35,52 @@ export default function LoginForm() {
   } = useForm<FormData>();
 
   const onsubmit: SubmitHandler<FormData> = async (data: FormData) => {
+    setLoading(true);
     try {
-      const res = await signIn("credentials", {
-        redirect: false,
-        email: data.email,
-        password: data.password,
-      });
-
-      if (res?.error) {
-        toast.error(res.error); 
-        return;
-      }
-
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      setAuthCookie();
       toast.success("Login successful");
-      router.push("/");
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        console.log(error);
-        toast.error(error.response?.data?.message || "Registration failed!");
-      } else {
-        toast.error("Something went wrong. Please try again.");
+      router.push("/dashboard");
+    } catch (error: any) {
+      const msg =
+        error.code === "auth/invalid-credential" ||
+        error.code === "auth/wrong-password"
+          ? "Invalid email or password"
+          : error.code === "auth/user-not-found"
+            ? "No account found with this email"
+            : "Login failed. Please try again.";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Upsert user in MongoDB (non-blocking — don't fail the whole login if this fails)
+      try {
+        await api.post("api/users/upsert", {
+          username: user.displayName,
+          email: user.email,
+          firebaseUid: user.uid,
+        });
+      } catch (upsertError) {
+        console.error("Upsert failed (non-critical):", upsertError);
       }
+
+      setAuthCookie();
+      toast.success("Login successful");
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast.error("Google sign-in failed. Please try again.");
+      console.error(error, "google");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,7 +101,11 @@ export default function LoginForm() {
           </div>
 
           {/* Google Button */}
-          <button onClick={() => signIn("google", {callbackUrl: "/dashboard"})} className="w-full flex items-center justify-center gap-3 py-3 bg-white text-[#273F4F] font-semibold rounded-xl hover:scale-[1.02] active:scale-100 transition-all mb-6 shadow">
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 py-3 bg-white text-[#273F4F] font-semibold rounded-xl hover:scale-[1.02] active:scale-100 transition-all mb-6 shadow disabled:opacity-60 disabled:cursor-not-allowed"
+          >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -100,8 +139,6 @@ export default function LoginForm() {
           {/* Form */}
           <form onSubmit={handleSubmit(onsubmit)}>
             <div className="space-y-5">
-              {/* Input wrapper */}
-
               <div>
                 <label className="block text-sm text-white/80 mb-2">
                   Email
@@ -112,7 +149,7 @@ export default function LoginForm() {
                     type="text"
                     placeholder="john@example.com"
                     {...register("email", { required: "Email is required" })}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/40 border border-white/10 focus:border-white/30 focus:ring-2  outline-none transition"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/40 border border-white/10 focus:border-white/30 focus:ring-2 outline-none transition"
                   />
                 </div>
               </div>
@@ -131,7 +168,7 @@ export default function LoginForm() {
                       required: "Password is required",
                       minLength: {
                         value: 3,
-                        message: "Password must be at least 6 characters",
+                        message: "Password must be at least 3 characters",
                       },
                     })}
                     className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/10 text-white placeholder-white/40 border border-white/10 focus:border-white/30 focus:ring-2 focus:ring-white/10 outline-none transition"
@@ -149,14 +186,14 @@ export default function LoginForm() {
               {/* CTA */}
               <button
                 type="submit"
-                className="w-full cursor-pointer py-3 rounded-xl bg-white text-[#273F4F] font-bold hover:scale-[1.02] active:scale-100 transition-all shadow-lg"
+                disabled={loading}
+                className="w-full cursor-pointer py-3 rounded-xl bg-white text-[#273F4F] font-bold hover:scale-[1.02] active:scale-100 transition-all shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Login
+                {loading ? "Logging in..." : "Login"}
               </button>
 
               {Object.keys(errors).length > 0 && (
                 <div className="bg-red-500/10 border border-red-500 text-red-500 text-center py-2 rounded">
-                  {errors.username && <p>{errors.username.message}</p>}
                   {errors.email && <p>{errors.email.message}</p>}
                   {errors.password && <p>{errors.password.message}</p>}
                 </div>
@@ -166,7 +203,7 @@ export default function LoginForm() {
 
           {/* Footer */}
           <p className="mt-6 text-center text-sm text-white/70">
-            Don&apost have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/auth/register"
               className="text-white font-semibold hover:underline"

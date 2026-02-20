@@ -2,7 +2,7 @@
 import balanceContext from "@/app/context/BalanceContext";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
-import { useSession } from "next-auth/react";
+import { useAuth } from "./FirebaseAuthProvider";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -18,7 +18,7 @@ const BalanceProvider = ({ children }: Props) => {
   const [page, setPage] = useState<number>(1);
   const [incomeId, setIncomeId] = useState<string>("");
   const [debounceSearch, setDebounceSearch] = useState("");
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -41,7 +41,7 @@ const BalanceProvider = ({ children }: Props) => {
       if (endDate) params.to = endDate;
 
       const res = await api.get(
-        `api/balance/get-income-data/${session?.user?.email}`,
+        `api/balance/get-income-data/${firebaseUser?.email}`,
         {
           params,
           withCredentials: true,
@@ -76,14 +76,14 @@ const BalanceProvider = ({ children }: Props) => {
   } = useQuery({
     queryKey: [
       "balanceData",
-      session?.user?.email,
+      firebaseUser?.email,
       page,
       startDate,
       endDate,
       debounceSearch,
     ],
     queryFn: () => fetchBalanceData(),
-    enabled: !!session?.user?.email,
+    enabled: !!firebaseUser?.email,
   });
 
   const {

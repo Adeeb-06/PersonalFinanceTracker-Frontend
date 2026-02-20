@@ -1,17 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import savingsContext from "@/app/context/SavingsContext";
-import { useSession } from "next-auth/react";
+import { useAuth } from "./FirebaseAuthProvider";
 import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 
 const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
   const [savingsId, setSavingsId] = useState<string>("");
 
   const fetchSavings = async () => {
     try {
-      const res = await api.get(`api/savings/get/${session?.user?.email}`, {
+      const res = await api.get(`api/savings/get/${firebaseUser?.email}`, {
         withCredentials: true,
       });
       return res.data;
@@ -24,7 +24,7 @@ const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchSavingsByID = async () => {
     try {
       const res = await api.get(
-        `/api/savings/get/${savingsId}/${session?.user?.email}`,
+        `/api/savings/get/${savingsId}/${firebaseUser?.email}`,
         {
           withCredentials: true,
         },
@@ -43,9 +43,9 @@ const SavingsProvider = ({ children }: { children: React.ReactNode }) => {
     isLoading: isSavingsLoading,
     error: isSavingsError,
   } = useQuery({
-    queryKey: ["savingsData", session?.user?.email],
+    queryKey: ["savingsData", firebaseUser?.email],
     queryFn: () => fetchSavings(),
-    enabled: !!session?.user?.email,
+    enabled: !!firebaseUser?.email,
   });
 
   const {

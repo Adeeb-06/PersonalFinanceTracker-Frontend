@@ -11,7 +11,7 @@ import {
 import SavingsAddModal from "@/components/Modals/SavingsAddModal";
 import SavingsCard from "@/components/SavingsCard";
 import savingsContext from "@/app/context/SavingsContext";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 import SavingsCardSkeleton from "@/components/Skeletons/SavingsCardSkeleton";
 import NoSavingsFound from "@/components/Skeletons/NoSavings";
 
@@ -25,14 +25,12 @@ interface Goal {
 
 export default function SavingsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: session, status } = useSession();
+  const { firebaseUser, authLoading } = useAuth();
 
   const { savingsData, isSavingsLoading } = useContext(savingsContext)!;
 
   const showSkeleton =
-    isSavingsLoading ||
-    status === "loading" ||
-    (status === "authenticated" && !savingsData);
+    isSavingsLoading || authLoading || (!!firebaseUser && !savingsData);
 
   const getProgressPercentage = (current: number, target: number) => {
     return Math.min((current / target) * 100, 100);

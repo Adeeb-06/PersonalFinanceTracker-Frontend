@@ -2,7 +2,7 @@
 import savingsContext from "@/app/context/SavingsContext";
 import api from "@/lib/axios";
 import { Calendar, DollarSign, Target, X } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -19,7 +19,7 @@ const SavingsAddModal = ({
 }: {
   setIsModalOpen: (value: boolean) => void;
 }) => {
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
   const { refetchSavingsData } = useContext(savingsContext)!;
   const {
     register,
@@ -30,7 +30,7 @@ const SavingsAddModal = ({
   const onSubmit = async (data: SavingsGoalInputs) => {
     console.log(data);
     try {
-      const email = session?.user?.email;
+      const email = firebaseUser?.email;
       const res = await api.post(
         "/api/savings/add",
         { ...data, email },

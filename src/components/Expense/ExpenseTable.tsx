@@ -12,7 +12,7 @@ import {
   Edit2,
   ArrowDownLeft,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
@@ -39,7 +39,7 @@ interface Transaction {
 }
 
 export default function ExpenseTable() {
-  const { data: session, status } = useSession();
+  const { firebaseUser, authLoading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [id, setId] = useState<string>("");
@@ -66,9 +66,7 @@ export default function ExpenseTable() {
   console.log(expenseData);
 
   const showSkeleton =
-    isExpenseLoading ||
-    status === "loading" ||
-    (status === "authenticated" && !expenseData);
+    isExpenseLoading || authLoading || (!!firebaseUser && !expenseData);
 
   const handleDateFilter = () => {
     refetchExpenseData();

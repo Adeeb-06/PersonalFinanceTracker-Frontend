@@ -15,7 +15,7 @@ import {
 import { useForm } from "react-hook-form";
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 import { toast } from "react-toastify";
 import balanceContext from "@/app/context/BalanceContext";
 import UserContext from "@/app/context/UserContext";
@@ -52,12 +52,12 @@ export default function ExpenseAddModal({
     handleSubmit,
     formState: { errors },
   } = useForm<Balance>();
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
 
   const onSubmit = async (data: Balance) => {
     const newData = {
       ...data,
-      userEmail: session?.user?.email,
+      userEmail: firebaseUser?.email,
     };
     console.log(newData);
     try {

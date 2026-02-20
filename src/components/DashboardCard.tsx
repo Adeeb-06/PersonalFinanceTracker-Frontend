@@ -14,14 +14,14 @@ import {
 import { useContext } from "react";
 import DashboardContext from "@/app/context/DashboardContext";
 import DashboardSkeleton from "./Skeletons/DashboardSkeleton";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 
 export default function DashboardOverviewCard() {
   const [selectedMonth, setSelectedMonth] = useState(
     new Date().toISOString().slice(0, 7),
   );
 
-  const { data: session, status } = useSession();
+  const { firebaseUser, authLoading } = useAuth();
 
   const year: number = Number(selectedMonth.split("-")[0]);
   const month: number = Number(selectedMonth.split("-")[1]);
@@ -40,9 +40,7 @@ export default function DashboardOverviewCard() {
 
   console.log(dashboardReport, "report");
   const showSkeleton =
-    dashboardLoading ||
-    status === "loading" ||
-    (status === "authenticated" && !dashboardReport);
+    dashboardLoading || authLoading || (!!firebaseUser && !dashboardReport);
 
   if (showSkeleton) {
     return <DashboardSkeleton />;
@@ -56,7 +54,7 @@ export default function DashboardOverviewCard() {
     refetchDashboardData();
   };
 
-console.log(dashboardReport)
+  console.log(dashboardReport);
 
   const isDeficit = dashboardReport?.surplusPercentage < 0;
 

@@ -1,13 +1,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { User, BarChart3, LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useAuth } from "@/providers/FirebaseAuthProvider";
 import Link from "next/link";
 import Logo from "./Logo";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
+  const { firebaseUser, authLoading } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +20,12 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    document.cookie = "firebase-auth=; path=/; max-age=0";
+    router.push("/auth/login");
+  };
 
   return (
     <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
@@ -52,12 +62,12 @@ export default function Navbar() {
           <div className="h-6 w-px bg-white/10 mx-2"></div>
 
           {/* Auth Section */}
-          {status === "loading" ? (
+          {authLoading ? (
             <div className="h-9 w-20 rounded-full bg-zinc-800 animate-pulse"></div>
-          ) : status === "authenticated" ? (
+          ) : firebaseUser ? (
             <div className="flex items-center gap-3">
               <button
-                onClick={() => signOut()}
+                onClick={handleLogout}
                 className="flex items-center cursor-pointer gap-2 bg-white/10 hover:bg-red-500/10 hover:text-red-400 text-zinc-200 text-md font-semibold px-4 py-2 rounded-full transition-all border border-white/5"
               >
                 <LogOut className="w-3.5 h-3.5" />

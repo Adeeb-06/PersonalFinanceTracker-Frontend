@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import expenseContext from "@/app/context/ExpenseContext";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
-import { useSession } from "next-auth/react";
+import { useAuth } from "./FirebaseAuthProvider";
 
 interface Props {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ const ExpenseProvider = ({ children }: Props) => {
   const [search, setSearch] = useState<string>("");
   const [debounceSearch, setDebounceSearch] = useState<string>("");
 
-  const { data: session } = useSession();
+  const { firebaseUser } = useAuth();
 
   React.useEffect(() => {
     const handler = setTimeout(() => {
@@ -41,7 +41,7 @@ const ExpenseProvider = ({ children }: Props) => {
       if (endDate) params.to = endDate;
 
       const res = await api.get(
-        `/api/expense/get-expense/${session?.user?.email}`,
+        `/api/expense/get-expense/${firebaseUser?.email}`,
         {
           params,
           withCredentials: true,
@@ -59,7 +59,7 @@ const ExpenseProvider = ({ children }: Props) => {
     if (!monthExpense || !year) return { total: 0 };
     try {
       const res = await api.get(
-        `/api/expense/get-total-expense-by-month/${session?.user?.email}?month=${monthExpense}&year=${year}`,
+        `/api/expense/get-total-expense-by-month/${firebaseUser?.email}?month=${monthExpense}&year=${year}`,
         {
           withCredentials: true,
         },
@@ -81,14 +81,14 @@ const ExpenseProvider = ({ children }: Props) => {
   } = useQuery({
     queryKey: [
       "expenseData",
-      session?.user?.email,
+      firebaseUser?.email,
       page,
       startDate,
       endDate,
       debounceSearch,
     ],
     queryFn: () => fetchExpenseData(),
-    enabled: !!session?.user?.email,
+    enabled: !!firebaseUser?.email,
   });
 
   const {
@@ -99,12 +99,12 @@ const ExpenseProvider = ({ children }: Props) => {
   } = useQuery({
     queryKey: [
       "totalExpenseByMonthData",
-      session?.user?.email,
+      firebaseUser?.email,
       monthExpense,
       year,
     ],
     queryFn: () => fetchTotalExpenseByMonth(),
-    enabled: !!session?.user?.email && !!monthExpense && !!year,
+    enabled: !!firebaseUser?.email && !!monthExpense && !!year,
   });
 
   const fetchExpenseById = async (id: string) => {
@@ -124,9 +124,9 @@ const ExpenseProvider = ({ children }: Props) => {
     error: expenseDataByIdError,
     refetch: refetchExpenseDataById,
   } = useQuery({
-    queryKey: ["expenseDataById", session?.user?.email],
+    queryKey: ["expenseDataById", firebaseUser?.email],
     queryFn: () => fetchExpenseById(expenseId!),
-    enabled: !!session?.user?.email && !!expenseId,
+    enabled: !!firebaseUser?.email && !!expenseId,
   });
 
   const data = {
