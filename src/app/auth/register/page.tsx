@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import {
   createUserWithEmailAndPassword,
@@ -13,7 +12,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import api from "@/lib/axios";
-import { setAuthCookie } from "@/lib/auth";
+import { setAuthCookieAndRedirect } from "@/lib/auth";
 
 interface FormData {
   username: string;
@@ -24,7 +23,6 @@ interface FormData {
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const {
     register,
@@ -53,9 +51,8 @@ export default function RegisterForm() {
         firebaseUid: firebaseUser.uid,
       });
 
-      setAuthCookie();
       toast.success("Registered successfully! Welcome aboard.");
-      router.push("/dashboard");
+      setAuthCookieAndRedirect("/dashboard");
     } catch (error: any) {
       const msg =
         error.code === "auth/email-already-in-use"
@@ -87,9 +84,8 @@ export default function RegisterForm() {
         console.error("Upsert failed (non-critical):", upsertError);
       }
 
-      setAuthCookie();
       toast.success("Registered successfully!");
-      router.push("/dashboard");
+      setAuthCookieAndRedirect("/dashboard");
     } catch (error: any) {
       toast.error("Google sign-up failed. Please try again.");
       console.error(error);

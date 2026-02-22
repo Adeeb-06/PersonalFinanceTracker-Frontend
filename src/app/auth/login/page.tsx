@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import {
   signInWithEmailAndPassword,
@@ -12,7 +11,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import api from "@/lib/axios";
-import { setAuthCookie } from "@/lib/auth";
+import { setAuthCookieAndRedirect } from "@/lib/auth";
 
 interface FormData {
   email: string;
@@ -22,7 +21,6 @@ interface FormData {
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const {
     register,
@@ -34,9 +32,8 @@ export default function LoginForm() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      setAuthCookie();
       toast.success("Login successful");
-      router.push("/dashboard");
+      setAuthCookieAndRedirect("/dashboard");
     } catch (error: any) {
       const msg =
         error.code === "auth/invalid-credential" ||
@@ -69,9 +66,8 @@ export default function LoginForm() {
         console.error("Upsert failed (non-critical):", upsertError);
       }
 
-      setAuthCookie();
       toast.success("Login successful");
-      router.push("/dashboard");
+      setAuthCookieAndRedirect("/dashboard");
     } catch (error: any) {
       toast.error("Google sign-in failed. Please try again.");
       console.error(error, "google");
