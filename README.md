@@ -14,6 +14,8 @@ A sleek, responsive dashboard built with **Next.js** to help users take control 
 * **Styling:** Tailwind CSS
 * **State Management:** React Context API / TanStack Query
 * **Auth:** Firebase Authentication
+* **Backend:** ExpressJS (TypeScript)
+* **Database:** MongoDB
 * **Icons:** Lucide React
 
 ## 📸 App Screenshots
