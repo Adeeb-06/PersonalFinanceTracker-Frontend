@@ -12,8 +12,6 @@ export async function proxy(req: NextRequest) {
     const isPrivate = privateRoutes.some((route) => pathname.startsWith(route));
   
     if (isPrivate) {
-      // Firebase stores auth in IndexedDB, not accessible in Edge middleware.
-      // We rely on a lightweight "firebase-auth" cookie set after login.
       const authCookie = req.cookies.get("firebase-auth");
   
       if (!authCookie?.value) {
