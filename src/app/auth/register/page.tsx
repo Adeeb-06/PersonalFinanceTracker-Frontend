@@ -13,11 +13,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import api from "@/lib/axios";
-
-// Sets a cookie so the Edge middleware can detect Firebase auth state
-const setAuthCookie = () => {
-  document.cookie = "firebase-auth=true; path=/; max-age=86400; SameSite=Lax";
-};
+import { setAuthCookie } from "@/lib/auth";
 
 interface FormData {
   username: string;
